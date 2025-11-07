@@ -1,0 +1,31 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "wechat-tech-news",
+  "version": "1.0.0",
+  "description": "Complete automated workflow for daily tech news collection and WeChat Official Account publication",
+  "owner": {
+    "name": "Community Contributors",
+    "email": "support@wechat-tech-news.dev"
+  },
+  "metadata": {
+    "description": "Automated tech news research, compliance optimization, and WeChat formatting suite",
+    "version": "1.0.0",
+    "license": "MIT",
+    "repository": "https://github.com/your-org/wechat-tech-news",
+    "keywords": ["wechat", "tech-news", "research", "compliance", "automation", "chinese"]
+  },
+  "plugins": [
+    {
+      "name": "wechat-tech-news-suite",
+      "description": "Three-skill suite for automated tech news: deep research with 5-round verification, WeChat compliance optimization, and end-to-end workflow orchestration",
+      "source": "./",
+      "category": "productivity",
+      "strict": false,
+      "skills": [
+        "./daily-tech-news-search",
+        "./wechat-tech-news-writer",
+        "./tech-news-workflow"
+      ]
+    }
+  ]
+}

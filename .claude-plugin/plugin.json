@@ -1,0 +1,73 @@
+{
+  "name": "wechat-tech-news",
+  "description": "Complete automated workflow for daily tech news collection and WeChat Official Account publication. Includes deep research with 5-round verification, compliance optimization, and one-command publication-ready output.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Community Contributors",
+    "email": "support@wechat-tech-news.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/wechat-tech-news"
+  },
+  "keywords": [
+    "wechat",
+    "tech-news",
+    "research",
+    "compliance",
+    "automation",
+    "chinese",
+    "weixin"
+  ],
+  "license": "MIT",
+  "engines": {
+    "claude-code": ">=1.0.0"
+  },
+  "skills": [
+    "daily-tech-news-search",
+    "wechat-tech-news-writer",
+    "tech-news-workflow"
+  ],
+  "dependencies": {
+    "mcpServers": {
+      "tavily": {
+        "required": true,
+        "description": "Web search for deep research"
+      },
+      "serena": {
+        "required": false,
+        "description": "Optional: Project memory and optimization"
+      }
+    },
+    "commands": {
+      "/sc:research": {
+        "required": true,
+        "description": "Deep research with exhaustive depth"
+      }
+    }
+  },
+  "configuration": {
+    "outputDirectory": {
+      "type": "string",
+      "default": "daily_news/docs/research",
+      "description": "Directory for output files"
+    },
+    "defaultItemCount": {
+      "type": "number",
+      "default": 50,
+      "description": "Target number of news items"
+    },
+    "defaultStructure": {
+      "type": "string",
+      "enum": ["domestic_international", "theme_based"],
+      "default": "domestic_international",
+      "description": "Default article structure"
+    },
+    "complianceLevel": {
+      "type": "string",
+      "enum": ["strict", "normal", "lenient"],
+      "default": "normal",
+      "description": "Compliance checking strictness"
+    }
+  }
+}
