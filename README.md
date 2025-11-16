@@ -300,7 +300,7 @@ Publication Readiness   ≥80%      85-90%
    ```
 3. Check each skill has `SKILL.md`:
    ```bash
-   ls ~/.claude/plugins/marketplaces/wechat-tech-news/*/SKILL.md
+   ls ~/.claude/plugins/marketplaces/wechat-tech-news/skills/*/SKILL.md
    ```
 
 ### MCP Server Error
@@ -313,17 +313,17 @@ Publication Readiness   ≥80%      85-90%
 ## Documentation
 
 - **[README.md](README.md)** - This file
-- **[daily-tech-news-search/SKILL.md](daily-tech-news-search/SKILL.md)** - Research methodology
-- **[wechat-tech-news-writer/SKILL.md](wechat-tech-news-writer/SKILL.md)** - Optimization details
-- **[tech-news-workflow/SKILL.md](tech-news-workflow/SKILL.md)** - Workflow orchestration
+- **[daily-tech-news-search/SKILL.md](skills/daily-tech-news-search/SKILL.md)** - Research methodology
+- **[wechat-tech-news-writer/SKILL.md](skills/wechat-tech-news-writer/SKILL.md)** - Optimization details
+- **[tech-news-workflow/SKILL.md](skills/tech-news-workflow/SKILL.md)** - Workflow orchestration
 
 ### Reference Guides
 
-- **[search_queries.md](daily-tech-news-search/references/search_queries.md)** - Search customization
-- **[verification_process.md](daily-tech-news-search/references/verification_process.md)** - Quality control
-- **[compliance_guidelines.md](wechat-tech-news-writer/references/compliance_guidelines.md)** - Compliance rules
-- **[sensitive_keywords.md](wechat-tech-news-writer/references/sensitive_keywords.md)** - Keyword database
-- **[engagement_tactics.md](wechat-tech-news-writer/references/engagement_tactics.md)** - Audience engagement
+- **[search_queries.md](skills/daily-tech-news-search/references/search_queries.md)** - Search customization
+- **[verification_process.md](skills/daily-tech-news-search/references/verification_process.md)** - Quality control
+- **[compliance_guidelines.md](skills/wechat-tech-news-writer/references/compliance_guidelines.md)** - Compliance rules
+- **[sensitive_keywords.md](skills/wechat-tech-news-writer/references/sensitive_keywords.md)** - Keyword database
+- **[engagement_tactics.md](skills/wechat-tech-news-writer/references/engagement_tactics.md)** - Audience engagement
 
 ## Use Cases
 

@@ -16,16 +16,11 @@
   },
   "plugins": [
     {
-      "name": "wechat-tech-news-suite",
-      "description": "Three-skill suite for automated tech news: deep research with 5-round verification, WeChat compliance optimization, and end-to-end workflow orchestration",
+      "name": "wechat-tech-news",
+      "description": "Three-skill suite: daily tech news research with 5-round verification, WeChat compliance optimization, and end-to-end workflow orchestration. One command from search to publication-ready content.",
       "source": "./",
       "category": "productivity",
-      "strict": false,
-      "skills": [
-        "./daily-tech-news-search",
-        "./wechat-tech-news-writer",
-        "./tech-news-workflow"
-      ]
+      "strict": true
     }
   ]
 }
