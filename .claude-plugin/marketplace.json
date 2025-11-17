@@ -1,8 +1,5 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "wechat-tech-news",
-  "version": "1.0.0",
-  "description": "Complete automated workflow for daily tech news collection and WeChat Official Account publication",
   "owner": {
     "name": "Community Contributors",
     "email": "support@wechat-tech-news.dev"
@@ -19,8 +16,12 @@
       "name": "wechat-tech-news",
       "description": "Three-skill suite: daily tech news research with 5-round verification, WeChat compliance optimization, and end-to-end workflow orchestration. One command from search to publication-ready content.",
       "source": "./",
-      "category": "productivity",
-      "strict": true
+      "strict": false,
+      "skills": [
+        "./daily-tech-news-search",
+        "./wechat-tech-news-writer",
+        "./tech-news-workflow"
+      ]
     }
   ]
 }
