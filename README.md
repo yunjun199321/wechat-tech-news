@@ -2,7 +2,7 @@
 
 > **Complete automated workflow for daily tech news → WeChat Official Account publication**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/your-org/wechat-tech-news/releases)
+[![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com/your-org/wechat-tech-news/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/claude--code-%3E%3D1.0.0-purple.svg)](https://claude.ai/code)
 
