@@ -5,21 +5,23 @@
     "email": "support@wechat-tech-news.dev"
   },
   "metadata": {
-    "description": "Automated tech news research, compliance optimization, and WeChat formatting suite",
-    "version": "1.0.0",
+    "description": "Automated 5-phase tech news workflow: collection, hardcoded validation, content writing, multi-round formatting, and Word export. AI-focused with strict 48h freshness and 100+ compliance rules.",
+    "version": "4.0.0",
     "license": "MIT",
     "repository": "https://github.com/your-org/wechat-tech-news",
-    "keywords": ["wechat", "tech-news", "research", "compliance", "automation", "chinese"]
+    "keywords": ["wechat", "tech-news", "ai-focus", "validation", "compliance", "automation", "chinese", "workflow"]
   },
   "plugins": [
     {
       "name": "wechat-tech-news",
-      "description": "Three-skill suite: daily tech news research with 5-round verification, WeChat compliance optimization, and end-to-end workflow orchestration. One command from search to publication-ready content.",
+      "description": "Five-skill workflow suite: pure collection (search), mandatory validation (validator), content writing (writer), multi-round optimization (formatter), and Word export. Single Responsibility Principle with quality gates between all phases.",
       "source": "./",
       "strict": false,
       "skills": [
         "./daily-tech-news-search",
-        "./wechat-tech-news-writer",
+        "./daily-tech-news-validator",
+        "./daily-tech-news-writer",
+        "./daily-tech-news-formatter",
         "./tech-news-workflow"
       ]
     }

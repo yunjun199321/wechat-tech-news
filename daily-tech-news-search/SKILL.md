@@ -1,20 +1,20 @@
 ---
 name: daily-tech-news-search
-description: Automated daily tech news search with 5-round verification and intelligent 7-day progressive backfill. Searches ~50 items about major AI and tech companies using deep research. Use when you need comprehensive daily tech news collection for Chinese timezone dates.
+description: Pure data collection engine for daily AI tech news. Searches 45-55 raw items from major AI companies using deep research with strict 48h time window. No validation - delegates to daily-tech-news-validator.
 ---
 
 # Daily Tech News Search
 
-> **🆕 Version 2.0**: Now with intelligent time-progressive search (up to 7 days backfill)
+> **🔍 Version 4.0**: Pure collection engine - validation delegated to dedicated validator skill
 
 ## When to Use This Skill
 
 Use this skill when you need to:
-- Collect comprehensive daily tech news for publication or analysis
-- Search ~50 verified news items about AI and tech companies
-- Prioritize today's news with intelligent backfill from previous days
-- Work with Chinese timezone dates (UTC+8) for news freshness
-- Execute systematic research with quality verification (not just raw search)
+- Collect raw tech news data from authoritative sources
+- Search 45-55 news items about AI and tech companies
+- Prioritize freshness with 48-hour time window (24h preferred)
+- Work with Chinese timezone dates (UTC+8) for news accuracy
+- **Focus on quantity and coverage** - quality assurance done by validator
 
 ## Quick Start
 
@@ -22,35 +22,20 @@ Use this skill when you need to:
 使用 daily-tech-news-search skill
 ```
 
-**Execution Time**: 15-25 minutes
-**Output**: `daily_news/docs/research/tech_news_[YYYYMMDD]_raw.md`
+**Execution Time**: 15-20 minutes
+**Output**: `tech_news_[YYYYMMDD]_raw.md`
+**Next Phase**: Pass to daily-tech-news-validator for quality assurance
 
-## Core Workflow (v3.0 - Strict 48h Mode)
+## Core Workflow (v4.0 - Collection Only)
 
 1. **Auto-Calculate Date** - Determines current date in China timezone (UTC+8)
-2. **Strict Progressive Search** - Prioritizes freshness with 48-hour hard limit
-   - **Phase 1**: Today's news (Layer 0, 0-24h) - Target: 40-50 items
-   - **Phase 2**: Yesterday if needed (Layer 1, 24-48h) - Supplement to 40-45 items only
-   - **Phase 3**: ❌ Auto-disabled (>48h rejected unless importance ≥9.5 + manual approval)
+2. **Time-Progressive Search** - Prioritizes freshness
+   - **Priority 1**: Today's news (Layer 0, 0-24h) - Collect as many as possible
+   - **Priority 2**: Yesterday if needed (Layer 1, 24-48h) - Supplement to reach 45-55 items
+   - **Priority 3**: ❌ Auto-disabled (>48h rejected to maintain freshness)
 3. **Deep Research** - Executes `/sc:research --depth exhaustive --strategy unified`
-4. **5-Round Verification** - Systematic quality assurance with enhanced time validation
-5. **Intelligent Balancing** - Geographic/topic diversity with AI-focus filtering
-6. **Structured Output** - Generates markdown with ~40-45 verified AI-focused items
-
-## Verification Pipeline
-
-| Round | Criteria | Threshold |
-|-------|----------|-----------|
-| 1. Source Credibility | Official sources, major tech media, verified accounts | ≥7/10 avg |
-| 2. Time Validation (v3.0) | Strict 48h limit with double verification | 100% within 48h |
-| 3. Deduplication | Merge duplicate stories, keep highest quality | <5% duplicates |
-| 4. Completeness | Essential facts, data, quotes, context | ≥7/10 avg |
-| 5. Quality Gate | AI-focus, time distribution, geo/topic balance | Pass all checks |
-
-**Time Layers (v3.0 - Strict 48h)**:
-- 🟢 Layer 0 (Today): 0-24h, Priority: Highest, Weight: 1.00, **Auto-include all**
-- 🟡 Layer 1 (Yesterday): 24-48h, Priority: High, Weight: 0.90, **Supplement only**
-- 🔴 Layer 2+ (>48h): **Auto-reject** unless importance ≥9.5/10 + manual approval
+4. **AI-Focus Filtering** - Only collect AI-relevant news (basic keyword check)
+5. **Structured Output** - Generates markdown with ~45-55 raw items + metadata
 
 ## Search Coverage (AI-Focused)
 
@@ -60,104 +45,213 @@ Use this skill when you need to:
 
 **Excluded**: General semiconductor manufacturing, non-AI hardware, traditional tech news, pure quantum computing
 
-## Quality Standards
+## Search Strategy
 
-**Minimum** (Will Fail Quality Gate):
-- Item count: 40-50 (reduced from 45-55 due to stricter time filter)
-- Source credibility: ≥7.0/10 average
-- Time compliance: 100% within 48h (strict)
-- AI relevance: 95%+ AI-related content
-- Geographic balance: No single region >60%
+### Phase 1: Company-Specific Search
 
-**Excellence** (Recommended):
-- Quality score: ≥8.5/10
-- Completeness: ≥8.5/10
-- Time distribution: >80% from Layer 0 (today)
-- AI focus: 100% AI-related
-- All compliance flags documented
+Execute targeted searches for each major AI company:
+
+```yaml
+OpenAI:
+  - "OpenAI" AND ("AI" OR "GPT" OR "ChatGPT") AND (today OR "24 hours")
+  - "Sam Altman" AND "OpenAI" AND news
+
+Anthropic:
+  - "Anthropic" AND ("Claude" OR "AI safety") AND recent
+  - "Dario Amodei" AND news
+
+Google_AI:
+  - "Google" AND ("Gemini" OR "Bard" OR "DeepMind" OR "AI")
+  - "Sundar Pichai" AND "AI" AND news
+
+Microsoft_AI:
+  - "Microsoft" AND ("Azure AI" OR "Copilot" OR "OpenAI partnership")
+  - "Satya Nadella" AND "AI"
+
+[... similar for Meta, Amazon, xAI, etc.]
+```
+
+### Phase 2: Topic-Specific Search
+
+```yaml
+AI_Models:
+  - "large language model" OR "LLM" AND (launch OR release OR announce)
+  - "generative AI" AND (breakthrough OR "state of the art")
+
+AI_Funding:
+  - "AI startup" AND (funding OR "Series A" OR "Series B") AND "$"
+  - "artificial intelligence" AND investment AND "million" OR "billion"
+
+AI_Policy:
+  - "AI regulation" OR "AI governance" AND government
+  - "AI safety" AND policy AND (US OR China OR EU)
+
+AI_Products:
+  - "AI tool" OR "AI product" AND launch
+  - "AI feature" AND release
+```
+
+### Phase 3: Geographic Balance
+
+Ensure representation from both international and domestic (China) sources:
+
+```yaml
+Chinese_AI:
+  - "百度" AND "AI" OR "文心一言"
+  - "阿里" AND "通义千问"
+  - "字节跳动" AND "AI"
+  - "商汤" AND "AI"
+  - Search Chinese tech media: 36kr, tmtpost, etc.
+```
+
+## Basic AI Relevance Filtering
+
+**During Search** (lightweight filtering to reduce noise):
+
+```yaml
+Include_if:
+  - Title contains: AI, GPT, Claude, Gemini, LLM, machine learning, deep learning
+  - OR: Company in primary/secondary focus list + article mentions AI
+  - OR: Funding amount >$100M + AI keyword in description
+
+Exclude_if:
+  - Title contains: rare earth, lithography, 5G, blockchain (without AI context)
+  - AND: No AI keywords in first 200 characters of content
+```
+
+**Note**: This is basic filtering only. Comprehensive validation done by validator skill.
 
 ## Output Format
 
 ```markdown
-# [Date] Tech News Research Results
+# [Date] Tech News Research Results (Raw Collection)
 
-> **Coverage Summary**
-> - Total Items: 50
-> - Time Distribution: Today 38 (76%) | Yesterday 10 (20%) | 2+ days 2 (4%)
-> - Average Age: 14.2 hours
-> - Quality Score: 8.2/10 | Verification: 5/5 completed
+> **Collection Summary**
+> - Total Items Collected: 52
+> - Layer 0 (0-24h): 38 items (73%)
+> - Layer 1 (24-48h): 14 items (27%)
+> - Average Age: 16.5 hours
+> - Next Step: Validation required (daily-tech-news-validator)
 
 ## Time Layer Breakdown
 
-### 🟢 Layer 0 - Today (38 items, 76%)
-High-priority fresh news with maximum relevance
+### 🟢 Layer 0 - Today (38 items, 73%)
+Fresh news from past 24 hours
 
-### 🟡 Layer 1 - Yesterday (10 items, 20%)
-Supplemental items for balance and completeness
-- Reason: Geographic diversity (6), Topic gaps (4)
+### 🟡 Layer 1 - Yesterday (14 items, 27%)
+Supplemental items for coverage completeness
 
-### 🟠 Layer 2-3 - Older (2 items, 4%)
-High-impact items only (importance ≥9/10)
-- Reason: Critical announcements
+## Collection Statistics
 
-## Coverage Summary
-- AI Companies: 18 items
-- Tech Giants: 12 items
-- Chips & Hardware: 8 items
-- [Additional categories...]
+- AI Companies: 20 items
+- Tech Giants: 15 items  
+- AI Chips: 8 items
+- Funding: 6 items
+- Policy: 3 items
 
 ## [Category]
+
 ### [Company Name]
-**[#]. [Headline]**
-- Source: [publication] | [credibility]/10
-- Date: 2025-11-17 14:30 CST | Layer 0 (6h ago) 🟢
-- Summary: [2-3 sentences]
-- Key Data: [amounts, numbers, percentages]
-- Compliance Notes: [flags if any]
 
 **[#]. [Headline]**
-- Source: [publication] | [credibility]/10
-- Date: 2025-11-16 10:00 CST | Layer 1 (28h ago) 🟡
-- Supplement Reason: High importance (8.5/10), fills topic gap
+- Source: [publication]
+- URL: [link]
+- Date: 2025-11-20 14:30 CST | Layer 0 (8h ago) 🟢
+- Summary: [2-3 sentences as found in source]
+- Key Data: [amounts, numbers, percentages if available]
+
+**[#]. [Headline]**
+- Source: [publication]
+- URL: [link]
+- Date: 2025-11-19 22:00 CST | Layer 1 (30h ago) 🟡
 - Summary: [2-3 sentences]
-- Key Data: [amounts, numbers, percentages]
 
-## Verification Summary
-[Detailed metrics for all 5 rounds including time layer distribution]
+[... 52 items total ...]
 
-## Compliance Flags Summary
-[High/medium priority flags with counts]
-```
+## Collection Notes
 
-## Compliance Pre-Filtering
+**Search Gaps Identified**:
+- [Areas where search found limited results]
 
-During research, automatically flags sensitive topics:
-- 🔴 Military/defense contracts → Note for neutralization
-- 🔴 US-China trade restrictions → Frame as policy adjustments
-- 🟡 Financial speculation → Add disclaimers
-- 🟡 Unverified claims → Mark for review
+**High-Priority Items** (for validator):
+- [Items that seem particularly important]
 
-## Reference Documentation
+**Potential Duplicates** (for validator to merge):
+- Items #5 and #12 may cover same OpenAI announcement
+- Items #23 and #31 both about NVIDIA earnings
 
-- **[search_queries.md](references/search_queries.md)** - Customize search scope and company list
-- **[verification_process.md](references/verification_process.md)** - Detailed verification logic and criteria (v2.0 with time layers)
-- **[progressive_time_search_spec.md](references/progressive_time_search_spec.md)** - ⭐ Complete v2.0 technical specification
-
-## Integration
-
-**Input**: Auto-calculated China timezone date (or user-specified `--date` parameter)
-**Output**: Structured markdown with time-layer metadata, ready for `wechat-tech-news-writer` skill
-**Handoff**: Direct consumption by `tech-news-workflow` pipeline
+**Time Distribution**:
+- Excellent freshness: 73% from today
+- Minimal old content: 0% >48h
 
 ---
 
-**Version**: 3.0 (2025-01-20)
-**Changes in v3.0**:
-- ⚡ **Strict 48h mode**: Auto-reject >48h news (vs. 7-day backfill in v2.0)
-- 🎯 **Pure AI focus**: Excludes general semiconductor, traditional tech (vs. mixed coverage in v2.0)
-- ✅ Top AI chip companies only (NVIDIA/AMD AI-specific)
-- ✅ Enhanced time validation with double-check mechanism
-- ✅ Target count adjusted to 40-50 items (from 45-55)
+**Generated by**: daily-tech-news-search v4.0.0 (collection only)
+**Execution Time**: 18 minutes 32 seconds
+**Next Phase**: daily-tech-news-validator (mandatory)
+**Workflow Status**: COLLECTION COMPLETE → VALIDATION PENDING
+```
 
-**Dependencies**: `/sc:research` command, Tavily MCP (or equivalent web search)
-**Performance**: ~40-45 items in 20-30 minutes (faster than v2.0 due to narrower scope), quality ≥7.5/10 typical
+## Integration with v4.0 Workflow
+
+### Responsibilities (v4.0)
+
+**This Skill Does**:
+- ✅ Execute comprehensive AI-focused web searches
+- ✅ Collect 45-55 raw news items
+- ✅ Prioritize fresh content (24h > 48h > reject)
+- ✅ Basic AI relevance filtering (keyword-based)
+- ✅ Structure data in standard markdown format
+- ✅ Include all metadata (source, URL, timestamp, layer)
+
+**This Skill Does NOT Do**:
+- ❌ Source credibility scoring (→ validator)
+- ❌ Deep time validation (→ validator)
+- ❌ Deduplication (→ validator)
+- ❌ Completeness checking (→ validator)
+- ❌ Quality gates (→ validator)
+- ❌ Content writing (→ writer)
+- ❌ Compliance optimization (→ formatter)
+
+### Workflow Handoff
+
+```yaml
+After_Collection:
+  Output_File: tech_news_[DATE]_raw.md
+  Expected_Count: 45-55 items
+  Status: RAW - Unvalidated
+  
+  Next_Step:
+    Skill: daily-tech-news-validator
+    Input: tech_news_[DATE]_raw.md
+    Expected: Validation may reject 10-20% of items
+    Final: tech_news_[DATE]_validated.json (40-45 items)
+```
+
+## Reference Documentation
+
+- **[search_queries.md](references/search_queries.md)** - Complete search query templates
+- **[progressive_time_search_spec.md](references/progressive_time_search_spec.md)** - Time-layer search logic
+- **[ai_focus_filters.md](references/ai_focus_filters.md)** - Basic AI relevance filters
+
+## Performance Expectations
+
+```
+Component                    Time        Output
+─────────────────────────────────────────────────
+Date calculation             ~10s        China timezone date
+Company-specific searches    8-12 min    ~35-40 items
+Topic-specific searches      4-6 min     ~10-15 items
+Geographic balance           2-3 min     ~5-10 items (Chinese sources)
+Data structuring            ~2 min       Markdown formatting
+─────────────────────────────────────────────────
+Total                       15-20 min    45-55 raw items
+```
+
+---
+
+**Version**: 4.0.0
+**Role**: Pure collection engine
+**Dependencies**: `/sc:research` command, Tavily MCP or equivalent
+**Output**: Raw, unvalidated markdown (validation in next phase)
+**Philosophy**: Quantity and coverage over quality - let validator handle quality assurance
