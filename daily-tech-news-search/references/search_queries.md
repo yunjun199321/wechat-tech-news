@@ -61,11 +61,12 @@ Focus: Grok updates, infrastructure, partnerships
 
 ### Tech Giants
 
-#### NVIDIA
+#### NVIDIA (AI-Focused Only)
 ```
-Primary: "NVIDIA" AND (AI OR chip) AND news AND "today"
-Secondary: "Jensen Huang" OR "H100" OR "Blackwell" OR "stock"
-Focus: AI chips, market performance, partnerships, data centers
+Primary: "NVIDIA" AND ("AI" OR "H100" OR "Blackwell" OR "data center AI") AND news AND "today"
+Secondary: "Jensen Huang" AND "AI" OR "NVIDIA" AND ("training" OR "inference" OR "AI chip")
+Focus: AI chips, AI data centers, AI partnerships, AI product launches
+Exclude: Gaming GPUs, crypto mining, automotive (unless AI-specific like autonomous driving)
 ```
 
 #### Apple
@@ -143,31 +144,40 @@ Filters:
 - Announced within 24 hours
 ```
 
-### Chip & Semiconductor
+### AI Chip Innovation (Top Players Only)
 
 ```
-Primary: ("AI chip" OR "semiconductor" OR "GPU") AND news AND "today"
-Secondary: "AI accelerator" OR "TPU" OR "NPU"
-Focus: New products, manufacturing, policy, market data
+Primary: ("AI chip" OR "AI accelerator" OR "GPU for AI") AND ("NVIDIA" OR "AMD") AND news AND "today"
+Secondary: "TPU" OR "NPU" AND "AI" OR "neural processing"
+Focus: AI-specific chip products, AI training/inference hardware, AI data center buildouts
 
-Sub-queries:
-- Manufacturing: "fab" OR "foundry" OR "node"
-- Policy: "export control" OR "CHIPS Act" OR "subsidy"
-- Competition: "market share" OR "benchmark"
+⚠️ AI-Relevance Filter:
+- Include: AI training chips, AI inference accelerators, AI data center announcements
+- Include: NVIDIA H100/Blackwell, AMD MI300/Instinct series
+- Exclude: General semiconductor manufacturing (TSMC foundry, Intel CPUs)
+- Exclude: Raw materials (rare earth, silicon wafers, lithography equipment)
+- Exclude: Consumer electronics chips (smartphone, IoT, automotive unless AI)
+
+Exception: Include foundry news ONLY if directly tied to major AI chip production
+Example: "TSMC expands 3nm capacity for NVIDIA AI chips" ✅
+Example: "TSMC general Q3 earnings" ❌
 ```
 
-### Quantum Computing
+### Quantum Computing (AI Applications Only)
 
 ```
-Primary: "quantum computing" AND (news OR breakthrough OR commercial) AND "today"
-Secondary: "quantum" AND ("IBM" OR "Google" OR "IonQ" OR "Rigetti")
-Focus: Commercialization, breakthroughs, partnerships
+Primary: "quantum computing" AND ("AI" OR "machine learning" OR "optimization") AND news AND "today"
+Secondary: "quantum" AND ("IBM" OR "Google") AND "AI"
+Focus: Quantum-AI hybrid systems, quantum machine learning breakthroughs
 
-Key terms:
-- Qubit count and quality
-- Error correction
-- Commercial availability
-- Application cases
+⚠️ AI-Relevance Filter:
+- Include ONLY: Quantum computing applied to AI/ML problems
+- Include ONLY: Quantum-accelerated machine learning announcements
+- Exclude: Pure quantum computing research without AI connection
+- Exclude: General quantum hardware announcements
+
+Example: "Google quantum chip accelerates AI training" ✅
+Example: "IBM reaches 1000 qubit milestone" ❌ (unless AI-related)
 ```
 
 ### AI Regulation & Policy
@@ -183,17 +193,21 @@ Geographic queries:
 - China: "CAC" OR "网信办"
 ```
 
-### Cybersecurity & Privacy
+### AI Security & Privacy
 
 ```
-Primary: ("AI security" OR "privacy" OR "data protection") AND news AND "today"
-Secondary: "breach" OR "vulnerability" OR "encryption"
-Focus: Security incidents, new protections, compliance
+Primary: ("AI security" OR "AI privacy" OR "AI safety") AND news AND "today"
+Secondary: ("jailbreak" OR "prompt injection" OR "AI vulnerability") OR "AI alignment"
+Focus: AI-specific security issues, AI model safety, AI privacy breaches
 
-Key areas:
-- AI-specific vulnerabilities
-- Privacy regulations
-- Security products
+⚠️ AI-Relevance Filter:
+- Include: AI model vulnerabilities, LLM security, AI safety research
+- Include: AI-powered cybersecurity tools (if major launch/funding)
+- Exclude: General cybersecurity news without AI connection
+- Exclude: Traditional network security, malware (unless AI-related)
+
+Example: "ChatGPT jailbreak discovered" ✅
+Example: "Microsoft patches Windows vulnerability" ❌
 ```
 
 ---
@@ -244,13 +258,16 @@ AND "November 7 2025"
 
 ## Date Handling
 
+> **🆕 Version 2.0**: Progressive multi-day search with time layers
+
 ### China Timezone (UTC+8) Logic
 
 ```python
-# Pseudo-code for date calculation
+# Pseudo-code for date calculation (v2.0)
 import datetime
 
 def get_china_date():
+    """Calculate current date in China timezone"""
     utc_now = datetime.datetime.utcnow()
     china_offset = datetime.timedelta(hours=8)
     china_now = utc_now + china_offset
@@ -268,17 +285,165 @@ def get_china_date():
 # UTC 18:00 Nov 7 → China Nov 8 (search "November 8 2025")
 ```
 
+### Progressive Time Layer Search (v2.0)
+
+```python
+def generate_layer_dates(base_date, max_layers=8):
+    """
+    Generate date search targets for progressive backfill
+
+    Args:
+        base_date: Current China date
+        max_layers: 0-7 (today through 7 days ago)
+
+    Returns:
+        List of (layer, date) tuples
+    """
+    layers = []
+    for layer in range(max_layers):
+        target_date = base_date - datetime.timedelta(days=layer)
+        layers.append((layer, target_date))
+
+    return layers
+
+# Example usage:
+china_date = get_china_date()  # 2025-11-17
+layers = generate_layer_dates(china_date)
+
+# Output:
+# [(0, 2025-11-17),  # Layer 0: Today
+#  (1, 2025-11-16),  # Layer 1: Yesterday
+#  (2, 2025-11-15),  # Layer 2: 2 days ago
+#  (3, 2025-11-14),  # Layer 3: 3 days ago
+#  (4, 2025-11-13),  # Layer 4: 4 days ago
+#  (5, 2025-11-12),  # Layer 5: 5 days ago
+#  (6, 2025-11-11),  # Layer 6: 6 days ago
+#  (7, 2025-11-10)]  # Layer 7: 7 days ago
+```
+
+### Date Query Generation
+
+```python
+def generate_date_query(target_date):
+    """
+    Generate multiple date format variations for robust search
+
+    Args:
+        target_date: datetime.date object
+
+    Returns:
+        List of date strings in various formats
+    """
+    formats = [
+        target_date.strftime("%B %d, %Y"),     # November 17, 2025
+        target_date.strftime("%b %d %Y"),      # Nov 17 2025
+        target_date.strftime("%Y-%m-%d"),      # 2025-11-17
+        target_date.strftime("%d %B %Y"),      # 17 November 2025
+    ]
+
+    # Add relative terms for Layer 0
+    if is_today(target_date):
+        formats.extend(["today", "今天"])
+
+    return formats
+
+def build_search_query(base_query, layer, target_date):
+    """
+    Build complete search query with date filters
+
+    Args:
+        base_query: Core search terms (e.g., "OpenAI news")
+        layer: Time layer (0-7)
+        target_date: Date to search for
+
+    Returns:
+        Complete search query string
+    """
+    date_formats = generate_date_query(target_date)
+
+    # Create OR clause for date formats
+    date_clause = " OR ".join([f'"{df}"' for df in date_formats])
+
+    # Combine with base query
+    query = f'{base_query} AND ({date_clause})'
+
+    return query
+
+# Example:
+# Layer 0 (Today):
+#   'OpenAI news AND ("November 17, 2025" OR "Nov 17 2025" OR "2025-11-17" OR "today" OR "今天")'
+#
+# Layer 1 (Yesterday):
+#   'OpenAI news AND ("November 16, 2025" OR "Nov 16 2025" OR "2025-11-16")'
+```
+
+### Search Execution Strategy
+
+```python
+def progressive_search(target_count=50):
+    """
+    Execute progressive time-layered search
+
+    Strategy:
+    1. Start with Layer 0 (today)
+    2. If count < 50, search Layer 1 (yesterday)
+    3. Continue through Layers 2-7 until target reached
+    4. Stop at Layer 7 or when count >= 45
+    """
+    china_date = get_china_date()
+    all_items = []
+    layer = 0
+
+    while len(all_items) < target_count and layer <= 7:
+        # Calculate target date for this layer
+        target_date = china_date - datetime.timedelta(days=layer)
+
+        # Build and execute search
+        queries = build_company_queries(target_date, layer)
+        results = execute_search(queries)
+
+        # Filter and process
+        filtered = filter_by_quality(results)
+
+        if layer == 0:
+            # Layer 0: Accept all quality items
+            all_items.extend(filtered)
+        else:
+            # Layer 1+: Intelligent supplementation
+            needed = target_count - len(all_items)
+            supplements = select_supplements(
+                current_items=all_items,
+                candidates=filtered,
+                needed=needed,
+                layer=layer
+            )
+            all_items.extend(supplements)
+
+        layer += 1
+
+    return all_items
+```
+
 ### Date Format Variations
 
 Use multiple formats for maximum coverage:
 
 ```
-"November 7, 2025"
-"Nov 7 2025"
-"2025-11-07"
-"7 November 2025"
-"今天" (today, for Chinese sources)
-"last 24 hours"
+Standard Formats:
+- "November 7, 2025"
+- "Nov 7 2025"
+- "2025-11-07"
+- "7 November 2025"
+
+Relative Terms (Layer 0 only):
+- "today"
+- "今天" (Chinese)
+- "last 24 hours"
+
+Layer-Specific Hints:
+- Layer 0: "breaking", "just announced", "launches today"
+- Layer 1: "yesterday", "昨天"
+- Layer 2+: Use exact dates only
 ```
 
 ---

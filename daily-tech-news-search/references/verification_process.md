@@ -143,24 +143,33 @@ Is it score ≥7?
 
 ---
 
-## Round 2: Date and Freshness Validation
+## Round 2: Time Validation & Strict 48h Enforcement
+
+> **⚡ Version 3.0 Update**: Strict 48-hour hard limit with double verification (replaces 7-day progressive search from v2.0)
 
 ### Objective
-Ensure all news items are from the target date (within 24 hours in China timezone) and remove outdated information.
+Enforce strict 48-hour freshness requirement with enhanced validation to ensure all news items are recent and timely.
 
-### Date Requirements
+### Time Layer System (v3.0 - Strict 48h Mode)
 
-**Primary Criterion**: Published within last 24 hours (China Standard Time, UTC+8)
+**Overview**: News items classified into 2 active layers + auto-reject zone
 
-**Calculation Example**:
 ```
-Target date: November 7, 2025 (CST)
-Valid timestamp range:
-  Start: November 6, 2025 16:00 UTC (Nov 7, 00:00 CST)
-  End: November 7, 2025 15:59 UTC (Nov 7, 23:59 CST)
+Layer 0: Today (0-24h)        | 🟢 Tier 1 | Priority: Highest  | Weight: 1.00 | **Auto-include all**
+Layer 1: Yesterday (24-48h)   | 🟡 Tier 2 | Priority: High     | Weight: 0.90 | **Supplement only**
+Layer 2+: Older (>48h)        | 🔴 Reject | **Auto-reject** unless importance ≥9.5/10 + manual approval
+
+Hard Limit: 48 hours
+Target Output: ~40-45 items (reduced from 50 due to stricter time filter)
+Freshness Priority: >80% from Layer 0 preferred
 ```
 
-### Timestamp Types
+**Key Changes from v2.0**:
+- ❌ Removed Layers 2-7 (48h-7 days) - now auto-rejected
+- ✅ Layer 1 is now "supplement only" (triggered when Layer 0 < 35 items)
+- ✅ Added manual approval exception for critical news (importance ≥9.5)
+
+### Timestamp Extraction & Validation
 
 #### Priority 1: Publication Timestamp
 - Original article publication date/time
@@ -177,47 +186,124 @@ Valid timestamp range:
 - Use page meta tags, URL patterns
 - Flag as "estimated" in verification notes
 
-#### Reject: No Date Information
+#### Reject: No Date Information OR >7 days old
 - Cannot verify timeliness
 - Remove from results
 
 ### Process Steps
 
-**Step 1: Timestamp Extraction**
+**Step 1: Timestamp Extraction & Normalization**
 ```
 For each item:
 1. Extract publication date from source
 2. Convert to UTC+8 (China time)
-3. Calculate hours since publication
-4. Flag if >24 hours old
+3. Calculate age in hours
+4. Handle multiple timezone formats:
+   - ISO 8601: "2025-11-07T10:30:00Z"
+   - Unix timestamp: 1730973000
+   - Human readable: "November 7, 2025, 10:30 AM EST"
+5. Normalize to: "2025-11-07 18:30 CST"
 ```
 
-**Step 2: Timezone Normalization**
+**Step 2: Time Layer Assignment (v3.0)**
 ```
-Handle multiple timezone formats:
-- ISO 8601: "2025-11-07T10:30:00Z"
-- Unix timestamp: 1730973000
-- Human readable: "November 7, 2025, 10:30 AM EST"
+Based on age in hours (strict 48h mode):
+  0-24h    → Layer 0 (🟢) - Auto-include
+  24-48h   → Layer 1 (🟡) - Supplement only
+  >48h     → Reject (🔴) - Auto-reject unless exception applies
 
-Convert all to: "2025-11-07 18:30 CST"
-```
-
-**Step 3: Freshness Scoring**
-```
-Age in hours (from current China time):
-  0-6 hours: Breaking news (priority boost)
-  6-12 hours: Very fresh
-  12-18 hours: Fresh
-  18-24 hours: Acceptable
-  >24 hours: Reject
+Exception Criteria for >48h items:
+  - Importance score ≥9.5/10 (breakthrough/major announcement)
+  - Flagged for manual review
+  - User explicitly approves
+  - Logged in metadata as "overtime_approved"
 ```
 
-**Step 4: Update vs. Original Check**
+**Step 3: Enhanced Double Verification (v3.0 New)**
 ```
-For "updated" timestamps:
-1. Check if original publication was within window
-2. Verify update includes new information
-3. If just formatting/correction, use original date
+Purpose: Prevent occasional time errors through multi-source validation
+
+Check 1 - Metadata Timestamp:
+  - Extract from <published>, og:published_time, datePublished
+  - Calculate age vs current China time
+  - Result: timestamp_age_hours
+
+Check 2 - Content Analysis:
+  - Scan article text for time indicators:
+    - "today", "今天", "this morning" → likely 0-12h
+    - "yesterday", "昨天" → likely 24-36h
+    - Specific dates like "November 20, 2025"
+  - Result: content_age_estimate
+
+Check 3 - Cross-Validation:
+  IF |timestamp_age - content_age| > 12 hours:
+    🚨 FLAG for manual review
+    Reason: "Timestamp mismatch detected"
+    Action: Check source manually or reject if uncertain
+
+Check 4 - Sanity Check:
+  IF timestamp_age > 48 hours:
+    IF importance < 9.5:
+      ❌ Auto-reject, log reason
+    ELSE:
+      🚨 Pause workflow, ask user:
+      "Found high-importance item but >48h old. Include? [Y/N]"
+      "[Title], [Source], [Age: 73h], [Importance: 9.7/10]"
+```
+
+**Step 4: Fuzzy Date Handling (v3.0 New)**
+```
+IF no clear timestamp found:
+  - Mark as "⚠️ Time unverified"
+  - Apply credibility penalty: -2.0 points
+  - IF final credibility < 6.0:
+      ❌ Reject item
+  - ELSE:
+      Include but flag in output
+      Note: "Publication time estimated from context"
+```
+
+**Step 5: Freshness Weight Calculation (v3.0 Simplified)**
+```
+For importance scoring in Round 5:
+  Layer 0: base_importance × 1.00 (no penalty)
+  Layer 1: base_importance × 0.90 (10% penalty)
+  Layer 2+: Rejected (not applicable)
+```
+
+**Step 6: Metadata Enrichment (v3.0 Updated)**
+```
+Add to each item:
+- time_layer: 0 | 1 (or "rejected" if >48h)
+- layer_emoji: "🟢" | "🟡" | "🔴"
+- hours_ago: 6.5
+- publication_date_cst: "2025-11-20 14:30 CST"
+- freshness_weight: 1.00 | 0.90
+- time_verified: true | false (false if estimated)
+- verification_method: "metadata" | "content_analysis" | "estimated"
+```
+
+### Output Format (Updated)
+
+```markdown
+**[#]. [Headline]**
+- Source: TechCrunch | 9/10
+- Date: 2025-11-17 14:30 CST | Layer 0 (6h ago) 🟢
+- Summary: ...
+- Key Data: ...
+
+**[#]. [Headline]**
+- Source: Bloomberg | 8/10
+- Date: 2025-11-16 10:00 CST | Layer 1 (28h ago) 🟡
+- Summary: ...
+- Key Data: ...
+
+**[#]. [Headline]**
+- Source: Reuters | 9/10
+- Date: 2025-11-14 16:00 CST | Layer 3 (74h ago) 🟠
+- Summary: ...
+- Supplement Reason: High-impact announcement (importance 9.2/10)
+- Key Data: ...
 ```
 
 ### Special Cases
@@ -228,7 +314,8 @@ Example: Earnings calls at 4 PM EST
 
 Publication time: 4:00 PM EST (Nov 7)
 China time: 5:00 AM (Nov 8)
-Status: Accept if within overall 24h window
+Calculation: Age = (Current CST - 5:00 AM Nov 8)
+Assignment: Layer based on calculated age
 ```
 
 #### Breaking News During Cutoff
@@ -236,41 +323,95 @@ Status: Accept if within overall 24h window
 Example: News published at 11:50 PM CST
 
 If current time is 11:55 PM CST:
-- Accept (within 24h window)
-- Mark as "late-breaking"
-- May shift to next day's collection
+- Age: 5 minutes
+- Layer: 0 (Today)
+- Mark as "late-breaking" in notes
 ```
 
-#### Weekend and Holiday Delays
+#### Weekend and Holiday Gaps
 ```
 For Monday collections:
-- Acceptable range may extend to Friday afternoon
-- Flag weekend news separately
-- Prioritize Monday morning announcements
+- May include Layer 2-3 items from Friday/Saturday
+- Clearly label with layer emoji
+- Document gap in metadata summary
+- Example: "Weekend coverage: Layer 2-3 items included"
 ```
 
-### Output Metrics
+### Output Metrics (v3.0 Updated)
 
-**After Round 2**:
-- Items from Round 1: ~60-70
-- Items outside 24h window: ~5-10
-- Items without valid timestamp: ~2-5
-- Items passing to Round 3: ~55-65
-- Average age: 12-18 hours
+**After Round 2** (Strict 48h Mode):
+- Items from Round 1: ~50-70
+- Items beyond 48h: ~5-15 (auto-rejected, logged)
+- Items without valid timestamp: ~2-5 (credibility penalized or rejected)
+- Items flagged for manual review: ~1-3 (timestamp mismatch)
+- Items by layer:
+  - Layer 0 (Today): ~35-50 (target >80%)
+  - Layer 1 (Yesterday): ~5-15 (supplement only)
+  - Layer 2+ (>48h): 0 (rejected)
+- Items passing to Round 3: ~45-60
+- Average age: 6-18 hours (🚀 3x fresher than v2.0's 18-36h)
+- Layer 0 percentage: 80-90% (vs 60-80% in v2.0)
 
-### Decision Tree
+### Decision Tree (v3.0 - Strict 48h)
 
 ```
 Timestamp extracted?
     ├─ No → Can we estimate reliably?
-    │       ├─ Yes → Use estimate, flag, continue
-    │       └─ No → Reject
-    └─ Yes → Within 24h window (CST)?
-            ├─ Yes → Pass to Round 3
-            └─ No → Is it scheduled event just outside window?
-                    ├─ Yes → Include with note
-                    └─ No → Reject
+    │       ├─ Yes → Estimate, mark "unverified", credibility -2.0
+    │       │        └─ Final credibility ≥6.0? Pass : Reject
+    │       └─ No → Reject (cannot verify timeliness)
+    └─ Yes → Calculate age in hours
+            ├─ Double verification:
+            │   └─ Content analysis matches timestamp? (±12h tolerance)
+            │       ├─ Yes → Continue
+            │       └─ No → 🚨 Flag for manual review
+            ├─ 0-24h (Layer 0)?
+            │   └─ Yes → ✅ Auto-include, weight 1.00
+            ├─ 24-48h (Layer 1)?
+            │   └─ Yes → ⚠️ Mark "supplement", weight 0.90
+            │           └─ Use ONLY if Layer 0 count < 35
+            └─ >48h (Layer 2+)?
+                ├─ Importance ≥9.5?
+                │   ├─ Yes → 🚨 Ask user approval
+                │   │        └─ Approved? Include : Reject
+                │   └─ No → ❌ Auto-reject, log reason
+                └─ Log rejected item for transparency
 ```
+
+### Progressive Search Integration (v3.0 - Simplified)
+
+**How Round 2 Enforces 48h Strict Mode**:
+
+```
+Search Phase 1: Today (Layer 0)
+├─ Search executed for current China date
+├─ All items processed through Round 1
+├─ Round 2: Validate timestamps, assign to Layer 0
+├─ Enhanced verification: double-check + sanity check
+├─ Expected yield: 35-50 items
+└─ If count ≥ 35 → ✅ Skip Phase 2, proceed to Round 3
+    If count < 35 → ⚠️ Trigger Phase 2
+
+Search Phase 2: Yesterday (Layer 1) - Triggered only if needed
+├─ Search executed for (China date - 1)
+├─ All items processed through Round 1
+├─ Round 2: Validate timestamps, assign to Layer 1
+├─ Select high-importance items (≥8.0/10) for supplementation
+├─ Target: Supplement to 40-45 total items
+└─ If total count ≥ 40 → ✅ Proceed to Round 3
+    If total count < 30 → 🚨 Warning: Insufficient recent news
+
+Search Phase 3+: Extended Backfill (>48h)
+❌ Disabled by default in v3.0
+⚠️ Only activated if:
+  - Phase 2 yields < 30 total items
+  - User explicitly approves extended search
+  - Items must have importance ≥9.5/10
+```
+
+---
+
+**Version Note**: v3.0 replaces v2.0's 7-day progressive backfill with strict 48h mode. For scenarios requiring older news, users must manually approve exceptions.
 
 ---
 
