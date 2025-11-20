@@ -55,10 +55,10 @@ Creates 3-5 headline news items at article beginning:
 > 快速浏览本周最重要的科技动态
 
 1. **🇺🇸 [地域标识] [简短标题]**
-   一句话核心信息,突出影响和意义。
+   一句话核心信息，突出影响和意义。
 
 2. **🇨🇳 [地域标识] [简短标题]**
-   一句话核心信息,突出影响和意义。
+   一句话核心信息，突出影响和意义。
 ```
 
 **Selection Criteria**: High impact, cross-domain influence, reader interest, geographic balance
@@ -80,9 +80,12 @@ Creates 3-5 headline news items at article beginning:
 **Required Components**:
 1. **引导语** (Opening Hook) - Engaging 2-3 sentence summary
 2. **目录** (Table of Contents) - Anchor links with emoji icons
-3. **免责声明** (Disclaimer) - For financial data and policy content
-4. **互动引导** (Engagement) - End-of-article prompts for comments/sharing
-5. **相关阅读** (Related Reading) - Links to previous articles
+3. **📋 免责声明** (Comprehensive Disclaimer) - Structured disclaimer covering:
+   - Financial data (投资信息仅供参考，不构成投资建议)
+   - Technical information (产品性能以官方公告为准)
+   - Industry predictions (预测性陈述可能存在差异)
+4. **📅 下期预告** (Next Issue Preview) - 3-5 upcoming important events
+5. **🔔 订阅提示** (Subscription Prompt) - Encourage following the official account
 
 ## Compliance Checklist
 
@@ -114,11 +117,36 @@ Before publishing, verify:
 ## 📜 全球政策监管
 [政策新闻,独立板块]
 
-**免责声明**
-*本报告基于[DATE]的公开信息...*
+## 📋 免责声明
 
-**相关阅读推荐**
-- [上周科技新闻汇总](链接)
+**重要提示**
+
+本报告基于[起始日期]至[结束日期]的公开信息整理...
+
+**关于财务数据**
+- 所有投资相关信息仅供参考,不构成投资建议
+- 部分财务数据基于媒体报道或泄露文档...
+
+**关于技术信息**
+- 产品性能数据来自公司官方发布或媒体报道...
+
+**关于行业预测**
+- 预测性陈述基于当前市场信息和分析...
+
+---
+
+**📅 下期预告**
+
+重点关注:
+- [即将发生的重要活动1]
+- [即将发生的重要活动2]
+- [即将发生的重要活动3]
+
+---
+
+**🔔 订阅提示**
+
+关注本公众号,每日获取精选科技新闻汇总,不错过任何重要科技动态!
 ```
 
 ## Writing Principles
@@ -143,6 +171,7 @@ Before publishing, verify:
 - **[templates/domestic_international.md](assets/templates/domestic_international.md)** - Geographic structure template
 - **[templates/theme_based.md](assets/templates/theme_based.md)** - Theme structure template
 - **[templates/focus_highlights.md](assets/templates/focus_highlights.md)** - Focus section examples
+- **[templates/ending_template.md](assets/templates/ending_template.md)** - Standardized article ending format
 
 ## Integration
 
