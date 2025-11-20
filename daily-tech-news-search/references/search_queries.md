@@ -258,12 +258,10 @@ AND "November 7 2025"
 
 ## Date Handling
 
-> **🆕 Version 2.0**: Progressive multi-day search with time layers
 
 ### China Timezone (UTC+8) Logic
 
 ```python
-# Pseudo-code for date calculation (v2.0)
 import datetime
 
 def get_china_date():
@@ -285,7 +283,6 @@ def get_china_date():
 # UTC 18:00 Nov 7 → China Nov 8 (search "November 8 2025")
 ```
 
-### Progressive Time Layer Search (v2.0)
 
 ```python
 def generate_layer_dates(base_date, max_layers=8):
@@ -313,12 +310,6 @@ layers = generate_layer_dates(china_date)
 # Output:
 # [(0, 2025-11-17),  # Layer 0: Today
 #  (1, 2025-11-16),  # Layer 1: Yesterday
-#  (2, 2025-11-15),  # Layer 2: 2 days ago
-#  (3, 2025-11-14),  # Layer 3: 3 days ago
-#  (4, 2025-11-13),  # Layer 4: 4 days ago
-#  (5, 2025-11-12),  # Layer 5: 5 days ago
-#  (6, 2025-11-11),  # Layer 6: 6 days ago
-#  (7, 2025-11-10)]  # Layer 7: 7 days ago
 ```
 
 ### Date Query Generation
@@ -388,7 +379,6 @@ def progressive_search(target_count=50):
     1. Start with Layer 0 (today)
     2. If count < 50, search Layer 1 (yesterday)
     3. Continue through Layers 2-7 until target reached
-    4. Stop at Layer 7 or when count >= 45
     """
     china_date = get_china_date()
     all_items = []
@@ -443,7 +433,6 @@ Relative Terms (Layer 0 only):
 Layer-Specific Hints:
 - Layer 0: "breaking", "just announced", "launches today"
 - Layer 1: "yesterday", "昨天"
-- Layer 2+: Use exact dates only
 ```
 
 ---

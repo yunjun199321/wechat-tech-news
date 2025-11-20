@@ -145,26 +145,22 @@ Is it score ≥7?
 
 ## Round 2: Time Validation & Strict 48h Enforcement
 
-> **⚡ Version 3.0 Update**: Strict 48-hour hard limit with double verification (replaces 7-day progressive search from v2.0)
 
 ### Objective
 Enforce strict 48-hour freshness requirement with enhanced validation to ensure all news items are recent and timely.
 
-### Time Layer System (v3.0 - Strict 48h Mode)
 
 **Overview**: News items classified into 2 active layers + auto-reject zone
 
 ```
 Layer 0: Today (0-24h)        | 🟢 Tier 1 | Priority: Highest  | Weight: 1.00 | **Auto-include all**
 Layer 1: Yesterday (24-48h)   | 🟡 Tier 2 | Priority: High     | Weight: 0.90 | **Supplement only**
-Layer 2+: Older (>48h)        | 🔴 Reject | **Auto-reject** unless importance ≥9.5/10 + manual approval
 
 Hard Limit: 48 hours
 Target Output: ~40-45 items (reduced from 50 due to stricter time filter)
 Freshness Priority: >80% from Layer 0 preferred
 ```
 
-**Key Changes from v2.0**:
 - ❌ Removed Layers 2-7 (48h-7 days) - now auto-rejected
 - ✅ Layer 1 is now "supplement only" (triggered when Layer 0 < 35 items)
 - ✅ Added manual approval exception for critical news (importance ≥9.5)
@@ -205,7 +201,6 @@ For each item:
 5. Normalize to: "2025-11-07 18:30 CST"
 ```
 
-**Step 2: Time Layer Assignment (v3.0)**
 ```
 Based on age in hours (strict 48h mode):
   0-24h    → Layer 0 (🟢) - Auto-include
@@ -219,7 +214,6 @@ Exception Criteria for >48h items:
   - Logged in metadata as "overtime_approved"
 ```
 
-**Step 3: Enhanced Double Verification (v3.0 New)**
 ```
 Purpose: Prevent occasional time errors through multi-source validation
 
@@ -251,7 +245,6 @@ Check 4 - Sanity Check:
       "[Title], [Source], [Age: 73h], [Importance: 9.7/10]"
 ```
 
-**Step 4: Fuzzy Date Handling (v3.0 New)**
 ```
 IF no clear timestamp found:
   - Mark as "⚠️ Time unverified"
@@ -263,15 +256,12 @@ IF no clear timestamp found:
       Note: "Publication time estimated from context"
 ```
 
-**Step 5: Freshness Weight Calculation (v3.0 Simplified)**
 ```
 For importance scoring in Round 5:
   Layer 0: base_importance × 1.00 (no penalty)
   Layer 1: base_importance × 0.90 (10% penalty)
-  Layer 2+: Rejected (not applicable)
 ```
 
-**Step 6: Metadata Enrichment (v3.0 Updated)**
 ```
 Add to each item:
 - time_layer: 0 | 1 (or "rejected" if >48h)
@@ -300,7 +290,6 @@ Add to each item:
 
 **[#]. [Headline]**
 - Source: Reuters | 9/10
-- Date: 2025-11-14 16:00 CST | Layer 3 (74h ago) 🟠
 - Summary: ...
 - Supplement Reason: High-impact announcement (importance 9.2/10)
 - Key Data: ...
@@ -331,13 +320,10 @@ If current time is 11:55 PM CST:
 #### Weekend and Holiday Gaps
 ```
 For Monday collections:
-- May include Layer 2-3 items from Friday/Saturday
 - Clearly label with layer emoji
 - Document gap in metadata summary
-- Example: "Weekend coverage: Layer 2-3 items included"
 ```
 
-### Output Metrics (v3.0 Updated)
 
 **After Round 2** (Strict 48h Mode):
 - Items from Round 1: ~50-70
@@ -347,12 +333,8 @@ For Monday collections:
 - Items by layer:
   - Layer 0 (Today): ~35-50 (target >80%)
   - Layer 1 (Yesterday): ~5-15 (supplement only)
-  - Layer 2+ (>48h): 0 (rejected)
 - Items passing to Round 3: ~45-60
-- Average age: 6-18 hours (🚀 3x fresher than v2.0's 18-36h)
-- Layer 0 percentage: 80-90% (vs 60-80% in v2.0)
 
-### Decision Tree (v3.0 - Strict 48h)
 
 ```
 Timestamp extracted?
@@ -370,7 +352,6 @@ Timestamp extracted?
             ├─ 24-48h (Layer 1)?
             │   └─ Yes → ⚠️ Mark "supplement", weight 0.90
             │           └─ Use ONLY if Layer 0 count < 35
-            └─ >48h (Layer 2+)?
                 ├─ Importance ≥9.5?
                 │   ├─ Yes → 🚨 Ask user approval
                 │   │        └─ Approved? Include : Reject
@@ -378,7 +359,6 @@ Timestamp extracted?
                 └─ Log rejected item for transparency
 ```
 
-### Progressive Search Integration (v3.0 - Simplified)
 
 **How Round 2 Enforces 48h Strict Mode**:
 
@@ -402,7 +382,6 @@ Search Phase 2: Yesterday (Layer 1) - Triggered only if needed
     If total count < 30 → 🚨 Warning: Insufficient recent news
 
 Search Phase 3+: Extended Backfill (>48h)
-❌ Disabled by default in v3.0
 ⚠️ Only activated if:
   - Phase 2 yields < 30 total items
   - User explicitly approves extended search
@@ -411,7 +390,6 @@ Search Phase 3+: Extended Backfill (>48h)
 
 ---
 
-**Version Note**: v3.0 replaces v2.0's 7-day progressive backfill with strict 48h mode. For scenarios requiring older news, users must manually approve exceptions.
 
 ---
 

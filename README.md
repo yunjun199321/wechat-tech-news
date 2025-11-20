@@ -355,7 +355,6 @@ MIT License - see [LICENSE](LICENSE) file
 
 ## Changelog
 
-### v1.0.0 (2025-01-07)
 - ✨ Initial release
 - ✨ Three core skills: search, writer, workflow
 - ✨ 5-round verification system

@@ -27,7 +27,7 @@ daily-tech-news-search → wechat-tech-news-writer → tech-news-workflow
 - Geographic categorization (国内/国外) or theme-based structure
 - Compliance optimization using 100+ sensitive keyword substitutions
 - Adds WeChat elements (引导语, 目录, 免责声明, 互动引导)
-- Creates "本周焦点" (focus highlights) section with 5 headline items
+- Creates "48小时焦点" (focus highlights) section with 5 headline items
 - Output: `tech_news_[DATE]_wechat.md`
 
 **Skill 3: tech-news-workflow**

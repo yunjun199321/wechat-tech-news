@@ -12,7 +12,7 @@ description: Pure content writing engine that transforms validated news data int
 Use this skill when you need to:
 - Transform validated news data into WeChat article structure
 - Create engaging narratives from technical news items
-- Generate "本周焦点" (focus highlights) section
+- Generate "48小时焦点" (focus highlights) section
 - Organize content by geography (国内/国外) or themes
 - Write clear, accessible summaries for general tech audience
 - **Focus on content and structure** - compliance/formatting done by formatter
@@ -31,7 +31,7 @@ Use this skill when you need to:
 ## Core Writing Process (v4.0 - Content Only)
 
 1. **Load Validated Data** - Parse JSON from validator skill
-2. **Generate Focus Highlights** - Select 5 most important items for "本周焦点"
+2. **Generate Focus Highlights** - Select 5 most important items for "48小时焦点"
 3. **Categorize Content** - Organize by geography or theme
 4. **Write Engaging Summaries** - Transform technical data into readable narratives
 5. **Structure Document** - Create standard WeChat article sections
@@ -42,13 +42,13 @@ Use this skill when you need to:
 ### Option 1: Geographic Categorization (国内/国外分类) - **Recommended**
 
 ```markdown
-# 本周科技新闻汇总 | [Date]
+# 48小时科技新闻汇总 | [Date]
 
 > [引导语 - Engaging 2-3 sentence summary of the week]
 
-## 🌟 本周焦点
+## 🌟 48小时焦点
 
-> 快速浏览本周最重要的科技动态
+> 快速浏览48小时最重要的科技动态
 
 1. **🇺🇸 [地域标识] [简短标题]**
    一句话核心信息，突出影响和意义
@@ -146,7 +146,7 @@ Use this skill when you need to:
 [Policy, regulation, and governance]
 ```
 
-## Focus Highlights Selection ("本周焦点")
+## Focus Highlights Selection ("48小时焦点")
 
 ### Selection Criteria
 
@@ -350,9 +350,9 @@ Bad:
 >
 > 本周AI领域迎来重磅消息：OpenAI发布GPT-5，参数规模突破10万亿；NVIDIA第三季度营收创历史新高，同比增长206%；国内百度文心一言用户突破1亿。从技术突破到商业化加速，AI行业正在经历前所未有的变革期。
 
-## 🌟 本周焦点
+## 🌟 48小时焦点
 
-> 快速浏览本周最重要的科技动态
+> 快速浏览48小时最重要的科技动态
 
 1. **🇺🇸 OpenAI发布GPT-5，参数达10万亿**
    OpenAI正式推出第五代大语言模型，多模态能力全面升级，预计Q2通过API开放，标志着向AGI迈出重要一步。
@@ -496,7 +496,6 @@ After_Writing:
 
 ## Reference Documentation
 
-- **[ending_template.md](assets/templates/ending_template.md)** - Standardized article ending format (v3.0 simplified)
 - **[domestic_international.md](assets/templates/domestic_international.md)** - Geographic structure template
 - **[theme_based.md](assets/templates/theme_based.md)** - Theme-based structure template
 - **[focus_highlights.md](assets/templates/focus_highlights.md)** - Focus section examples

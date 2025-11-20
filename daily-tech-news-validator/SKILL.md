@@ -155,7 +155,6 @@ Quality_Gate:
 - Total Items: 50
 - Layer 0 (0-24h): 38 items (76%)
 - Layer 1 (24-48h): 12 items (24%)
-- Layer 2 (>48h): 0 items (0%)
 - Average Age: 14.2 hours
 
 Time Validation Details:
@@ -428,7 +427,7 @@ Rejected Items:
 
 **Round 9: Engagement Potential** (Optional)
 - Score items by expected reader interest
-- Identify top 5 candidates for "本周焦点"
+- Identify top 5 candidates for "48小时焦点"
 
 **Round 10: Cross-Reference Validation** (Optional)
 - Verify claims across multiple sources
@@ -711,7 +710,6 @@ Scenario: Final item count <40 after validation
 Root_Cause: Too many items rejected for quality/relevance issues
 Action:
   1. Review rejection reasons in validation_report.md
-  2. If mostly time issues → extend to Layer 2 (72h) with manual approval
   3. If mostly AI relevance → refine search queries in daily-tech-news-search
   4. If mostly credibility → add more Tier 1/2 sources to search
   5. Re-run search with adjusted parameters

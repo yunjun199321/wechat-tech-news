@@ -61,7 +61,6 @@
 - Total Items: [N]
 - Layer 0 (0-24h): [N] items ([X]%)
 - Layer 1 (24-48h): [N] items ([X]%)
-- Layer 2 (>48h): [N] items ([X]%)
 - Average Age: [X.X] hours
 
 ### Time Distribution Chart
@@ -292,7 +291,7 @@ All flagged items forwarded to formatter skill for neutralization.
 
 ### Round 9: Engagement Potential
 [If executed]
-Top 5 candidates for "本周焦点" (Focus Highlights):
+Top 5 candidates for "48小时焦点" (Focus Highlights):
 1. "[Title]" - Engagement Score: [X]/10 - Reason: [Impact|Novelty|Cross-domain]
 2. [... more items ...]
 

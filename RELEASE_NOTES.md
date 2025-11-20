@@ -1,6 +1,5 @@
 # Release Notes - WeChat Tech News Plugin
 
-## Version 1.0.0 (2025-01-07)
 
 ### 🎉 Initial Release
 
@@ -213,7 +212,6 @@ unzip wechat-tech-news-1.0.0.zip -d ~/.claude/plugins/marketplaces/
 
 ### 周报汇总
 
-收集 5-7 天，组合最佳内容，一次格式化
 
 ### 主题聚焦
 
@@ -275,7 +273,6 @@ Settings → Plugins → wechat-tech-news → Configure
 
 ## 📝 更新日志
 
-### v1.0.0 (2025-01-07)
 
 **新增功能**：
 - ✨ 三核心 Skills：search, writer, workflow

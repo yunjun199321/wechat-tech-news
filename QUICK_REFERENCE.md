@@ -292,7 +292,6 @@ cd ~/.claude/plugins/marketplaces/wechat-tech-news
 
 ### 技巧 2: 批量处理
 
-周末收集 5-7 天新闻，一次性生成周报：
 
 ```
 使用 tech-news-workflow skill --count 350

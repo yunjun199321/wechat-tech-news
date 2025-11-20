@@ -445,7 +445,7 @@ Main_Title_Rules:
   Examples:
     - "本周AI科技动态 | OpenAI发布GPT-5"
     - "11月科技新闻汇总 | 五大AI突破"
-    - "本周焦点 | AI投资创历史新高"
+    - "48小时焦点 | AI投资创历史新高"
 
   Avoid:
     - Generic titles ("科技新闻")
@@ -642,7 +642,7 @@ Structure_Verification:
   - All internal links working (if any)
   - Consistent heading hierarchy (no skipped levels)
   - Balanced section lengths (no 10-line section next to 200-line section)
-  - "本周焦点" has exactly 5 items
+  - "48小时焦点" has exactly 5 items
 
 Compliance_Final_Check:
   - No high-risk keywords remain
@@ -662,7 +662,7 @@ Metadata_Verification:
   - Word count within range (6000-8000)
   - All required sections present:
     * 引导语 (Opening hook)
-    * 本周焦点 (Focus highlights)
+    * 48小时焦点 (Focus highlights)
     * 主要内容 (Main sections)
     * 免责声明 (Disclaimer)
     * 下期预告 (Preview)
@@ -760,7 +760,7 @@ def verify_content_accuracy(content):
 - Table of contents: ✅ Matches sections
 - Heading hierarchy: ✅ No skipped levels
 - Section balance: ✅ Reasonable length distribution
-- "本周焦点": ✅ Exactly 5 items
+- "48小时焦点": ✅ Exactly 5 items
 
 #### Compliance Final Check
 - High-risk keywords: ✅ 0 remaining (all neutralized)
@@ -920,7 +920,7 @@ def verify_content_accuracy(content):
   - ✅ Word count: 6,000-8,000 ✓ (7,234)
   - ✅ Engaging title and opening
   - ✅ Clear table of contents
-  - ✅ "本周焦点" section with 5 items
+  - ✅ "48小时焦点" section with 5 items
   - ✅ Proper ending (disclaimer + preview + subscription)
 
 ---

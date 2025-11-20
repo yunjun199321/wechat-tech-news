@@ -305,7 +305,6 @@ description: Mandatory multi-round data validation engine with hardcoded rules..
 
 4. **添加changelog**
    - 创建CHANGELOG.md
-   - 记录v1.0 → v4.0变更历史
    - 工作量: 30分钟
 
 ---

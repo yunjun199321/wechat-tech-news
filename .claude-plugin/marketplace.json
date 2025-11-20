@@ -16,11 +16,11 @@
       "name": "wechat-tech-news",
       "description": "Five-skill workflow suite: pure collection (search), mandatory validation (validator), content writing (writer), multi-round optimization (formatter), and Word export. Single Responsibility Principle with quality gates between all phases.",
       "source": "./",
-      "strict": false,
+      "strict": true,
       "skills": [
         "./daily-tech-news-search",
         "./daily-tech-news-validator",
-        "./daily-tech-news-writer",
+        "./wechat-tech-news-writer",
         "./daily-tech-news-formatter",
         "./tech-news-workflow"
       ]
