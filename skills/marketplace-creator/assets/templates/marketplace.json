@@ -1,0 +1,15 @@
+{
+  "name": "{{MARKETPLACE_NAME}}",
+  "owner": {
+    "name": "{{OWNER_NAME}}",
+    "email": "{{OWNER_EMAIL}}"
+  },
+  "metadata": {
+    "description": "{{MARKETPLACE_DESCRIPTION}}",
+    "version": "1.0.0",
+    "license": "MIT",
+    "repository": "{{REPOSITORY_URL}}",
+    "keywords": []
+  },
+  "plugins": []
+}
