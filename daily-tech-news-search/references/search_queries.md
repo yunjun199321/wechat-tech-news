@@ -4,6 +4,8 @@
 
 This document provides optimized search queries for the daily-tech-news-search skill. Queries are organized by company, topic, and search strategy.
 
+**v4.1 Update**: Enhanced product focus with 60/30/10 content ratio (products/business/investment)
+
 ---
 
 ## Company-Specific Queries
@@ -12,23 +14,26 @@ This document provides optimized search queries for the daily-tech-news-search s
 
 #### OpenAI
 ```
-Primary: "OpenAI" AND (news OR announcement OR release) AND "today"
-Secondary: "ChatGPT" OR "GPT-4" OR "GPT-5" OR "Sam Altman"
-Focus: products, partnerships, funding, research
+Primary: "OpenAI" AND (launch OR release OR "new feature" OR "new model") AND "today"
+Secondary: "ChatGPT" OR "GPT-4" OR "GPT-5" OR "DALL-E" OR "Sora"
+Focus: **product launches, model updates, new features** (HIGH priority)
+Secondary: partnerships, research papers (MEDIUM priority)
+Low Priority: funding announcements (include only if >$500M)
 ```
 
 #### Anthropic
 ```
-Primary: "Anthropic" AND (news OR announcement) AND "today"
-Secondary: "Claude" OR "constitutional AI" OR "Dario Amodei"
-Focus: Claude updates, safety research, Google partnership, funding
+Primary: "Anthropic" AND (launch OR release OR "Claude update") AND "today"
+Secondary: "Claude" OR "Claude 4" OR "constitutional AI" OR "API"
+Focus: **Claude model updates, API features, safety research** (HIGH priority)
+Low Priority: funding rounds (include only if strategic)
 ```
 
 #### Google/DeepMind
 ```
-Primary: ("Google AI" OR "DeepMind" OR "Gemini") AND news AND "today"
-Secondary: "Bard" OR "PaLM" OR "Demis Hassabis"
-Focus: Gemini updates, DeepMind research, AI infrastructure
+Primary: ("Google AI" OR "DeepMind" OR "Gemini") AND (launch OR release OR research) AND "today"
+Secondary: "Bard" OR "Gemini Pro" OR "AI Studio" OR "PaLM"
+Focus: **Gemini updates, DeepMind research papers, new AI products** (HIGH priority)
 ```
 
 #### Microsoft
@@ -131,83 +136,120 @@ Focus: AI chips, Pangu models, cloud services
 
 ## Topic-Based Queries
 
-### Funding & Investment
+### 🚀 AI Product Launches (HIGH PRIORITY - 40%)
 
 ```
-Primary: ("AI funding" OR "AI investment" OR "venture capital") AND "today"
-Secondary: ("Series A" OR "Series B" OR "Series C") AND "AI"
-Focus: Major rounds (>$50M), unicorn valuations, strategic investments
+Primary: 
+- "AI product launch" OR "AI tool release" OR "new AI app"
+- "launches AI" OR "unveils AI" OR "announces AI product"
+- "available now" OR "beta launch" OR "public release"
+
+Secondary:
+- "GPT-4" OR "Claude" OR "Gemini" OR "LLaMA" (new versions)
+- "AI agent" OR "AI assistant" OR "AI copilot"
+- "AI SDK" OR "AI API" OR "developer tools"
+
+Focus: New AI models, tools, applications, SDKs, APIs
+Time: Last 24-48 hours
+Sources: Official blogs, TechCrunch, The Verge, Product Hunt
 
 Filters:
-- Amount ≥ $50 million
-- AI/tech companies only
-- Announced within 24 hours
+- Must have clear product name and launch date
+- Must be publicly available or in beta
+- Exclude vaporware announcements
 ```
 
-### AI Chip Innovation (Top Players Only)
+### 🎯 Trending AI Products (HIGH PRIORITY - 20%)
 
 ```
-Primary: ("AI chip" OR "AI accelerator" OR "GPU for AI") AND ("NVIDIA" OR "AMD") AND news AND "today"
-Secondary: "TPU" OR "NPU" AND "AI" OR "neural processing"
-Focus: AI-specific chip products, AI training/inference hardware, AI data center buildouts
+Sources:
+- Product Hunt: site:producthunt.com "AI" (sort by upvotes)
+- Hacker News: site:news.ycombinator.com "Show HN" "AI"
+- Reddit: site:reddit.com/r/artificial "new AI tool"
+- GitHub Trending: site:github.com/trending "AI" "machine learning"
 
-⚠️ AI-Relevance Filter:
-- Include: AI training chips, AI inference accelerators, AI data center announcements
-- Include: NVIDIA H100/Blackwell, AMD MI300/Instinct series
-- Exclude: General semiconductor manufacturing (TSMC foundry, Intel CPUs)
-- Exclude: Raw materials (rare earth, silicon wafers, lithography equipment)
-- Exclude: Consumer electronics chips (smartphone, IoT, automotive unless AI)
+Focus: Community-driven trending products, indie AI tools
+Time: Last 48 hours
+Validation: Must have >100 upvotes/stars or significant discussion
 
-Exception: Include foundry news ONLY if directly tied to major AI chip production
-Example: "TSMC expands 3nm capacity for NVIDIA AI chips" ✅
-Example: "TSMC general Q3 earnings" ❌
+Example queries:
+- site:producthunt.com "AI tool" "today" (sort by top)
+- site:news.ycombinator.com "Show HN: AI" (last 48h)
+- site:github.com/trending "AI agent" "LLM"
 ```
 
-### Quantum Computing (AI Applications Only)
+### 📊 AI Research & Papers (MEDIUM PRIORITY - 15%)
 
 ```
-Primary: "quantum computing" AND ("AI" OR "machine learning" OR "optimization") AND news AND "today"
-Secondary: "quantum" AND ("IBM" OR "Google") AND "AI"
-Focus: Quantum-AI hybrid systems, quantum machine learning breakthroughs
+Primary:
+- "AI research" OR "machine learning paper" OR "breakthrough"
+- "arXiv" AND "AI" AND "today"
+- Conference announcements: "NeurIPS" OR "ICML" OR "CVPR"
 
-⚠️ AI-Relevance Filter:
-- Include ONLY: Quantum computing applied to AI/ML problems
-- Include ONLY: Quantum-accelerated machine learning announcements
-- Exclude: Pure quantum computing research without AI connection
-- Exclude: General quantum hardware announcements
+Secondary:
+- "research paper" AND ("OpenAI" OR "DeepMind" OR "Meta AI")
+- "AI breakthrough" OR "AI discovery"
+- "open source" AND "research"
 
-Example: "Google quantum chip accelerates AI training" ✅
-Example: "IBM reaches 1000 qubit milestone" ❌ (unless AI-related)
+Focus: Major research publications, conference papers, breakthroughs
+Sources: arXiv, official labs, academic conferences
+Time: Last 48 hours
 ```
 
-### AI Regulation & Policy
+### 🤝 AI Activities & Events (MEDIUM PRIORITY - 10%)
 
 ```
-Primary: ("AI regulation" OR "AI policy" OR "AI law") AND "today"
-Secondary: "EU AI Act" OR "executive order" OR "privacy"
-Focus: New regulations, enforcement, compliance
+Primary:
+- "AI conference" OR "AI summit" OR "tech conference"
+- "keynote" AND "AI" OR "demo day"
+- "partnership" AND ("AI" OR "product launch")
 
-Geographic queries:
-- US: "FTC" OR "FCC" OR "Congress"
-- EU: "EU AI Act" OR "GDPR"
-- China: "CAC" OR "网信办"
+Secondary:
+- Company events: "OpenAI DevDay" OR "Google I/O" OR "Microsoft Build"
+- "open source release" OR "GitHub" AND "AI"
+- "collaboration" AND "AI" (product-focused only)
+
+Focus: Conferences, keynotes, strategic product partnerships
+Time: This week
+Exclude: General business partnerships without product component
 ```
 
-### AI Security & Privacy
+### 💼 Business & Strategy (MEDIUM PRIORITY - 15%)
 
 ```
-Primary: ("AI security" OR "AI privacy" OR "AI safety") AND news AND "today"
-Secondary: ("jailbreak" OR "prompt injection" OR "AI vulnerability") OR "AI alignment"
-Focus: AI-specific security issues, AI model safety, AI privacy breaches
+Primary:
+- "AI strategy" OR "AI adoption" OR "enterprise AI"
+- "partnership" (if involves product integration)
+- "expansion" AND "AI" (if involves new products/services)
 
-⚠️ AI-Relevance Filter:
-- Include: AI model vulnerabilities, LLM security, AI safety research
-- Include: AI-powered cybersecurity tools (if major launch/funding)
-- Exclude: General cybersecurity news without AI connection
-- Exclude: Traditional network security, malware (unless AI-related)
+Secondary:
+- Leadership changes (C-level only)
+- Market analysis (major shifts only)
+- Policy impacts (direct product implications)
 
-Example: "ChatGPT jailbreak discovered" ✅
-Example: "Microsoft patches Windows vulnerability" ❌
+Focus: Strategic moves that affect products/services
+Exclude: Generic business news, HR announcements
+```
+
+### 💰 Funding & Investment (LOW PRIORITY - 10%)
+
+```
+Primary: ("AI funding" OR "AI investment") AND "today"
+Secondary: ("Series C" OR "Series D") AND "AI" (later-stage only)
+Focus: **Major rounds only (≥$100M)**, unicorn valuations, IPOs
+
+⚠️ Strict Filters:
+- Amount ≥ $100 million (increased from $50M)
+- AI/tech companies with **actual products** (not pure R&D)
+- Strategic significance (not routine venture rounds)
+- Announced within 48 hours
+
+Deprioritize:
+- Series A/B rounds (unless breakthrough technology)
+- Generic venture capital news
+- Acquisition rumors (confirmed only)
+
+Weight: 0.3x (compared to 1.0x for product launches)
 ```
 
 ---
@@ -442,13 +484,8 @@ Layer-Specific Hints:
 ### Tier 1: Official Sources (Score 10/10)
 - Company blogs and press releases
 - Official Twitter/X accounts
-- SEC filings and investor relations
-- Government announcements
-
-**Search example**:
-```
-site:openai.com OR site:anthropic.com OR site:blog.google
-```
+- GitHub repos (for open source)
+- Product documentation sites
 
 ### Tier 2: Major Tech Media (Score 9/10)
 - TechCrunch
@@ -457,33 +494,24 @@ site:openai.com OR site:anthropic.com OR site:blog.google
 - VentureBeat
 - Wired
 
-**Search example**:
-```
-site:techcrunch.com OR site:theverge.com OR site:arstechnica.com
-```
-
-### Tier 3: Financial News (Score 9/10)
-- Bloomberg
+### Tier 3: Financial News (Score 8/10)
+- Bloomberg (product launches only, not just financial news)
 - Reuters
 - Wall Street Journal
-- Financial Times
 - CNBC
 
-**Search example**:
-```
-site:bloomberg.com OR site:reuters.com OR site:wsj.com
-```
+### **Tier 4: Community & Product Discovery (Score 8/10)** ⭐ NEW
+- **Product Hunt** (producthunt.com) - AI category, trending
+- **Hacker News** (news.ycombinator.com) - Show HN, AI discussions
+- **GitHub Trending** (github.com/trending) - AI repositories
+- **Reddit** (r/artificial, r/MachineLearning) - product discussions
+- **AI Product Aggregators**: There's An AI For That, Futurepedia
 
-### Tier 4: Industry Analysis (Score 8/10)
-- InfoQ
-- IEEE Spectrum
-- MIT Technology Review
-- Hacker News (with verification)
-
-**Search example**:
-```
-site:infoq.com OR site:spectrum.ieee.org OR site:technologyreview.com
-```
+**Validation Required**: Community sources must have:
+- Significant engagement (>100 upvotes/comments)
+- Clear product description
+- Working demo/link
+- Cross-reference with Tier 1-2 sources when possible
 
 ### Tier 5: Social Media (Score 7/10, requires verification)
 - Verified Twitter/X accounts
@@ -590,39 +618,77 @@ site:36kr.com OR site:pingwest.com OR site:163.com OR site:sina.com.cn
 
 ## Sample Complete Search Sequence
 
-### Morning Research Routine (China timezone)
+### Morning Research Routine (China timezone) - v4.1 Product-Focused
 
 ```
 1. Date calculation
-   → Today is November 7, 2025 (CST)
+   → Today is November 22, 2025 (CST)
 
-2. Breaking news scan (10 queries)
-   → AI breaking news today
-   → Tech breaking news today
-   → Each major company + "today"
+2. 🚀 Product launches scan (15 queries) - HIGH PRIORITY
+   → AI product launches today
+   → New AI tools/websites
+   → Each major company + "launch" OR "release"
+   → Product Hunt trending AI (today + yesterday)
+   → Hacker News "Show HN" AI (48h)
 
-3. Company-specific deep dive (15 queries)
-   → One query per major company
-   → Include subsidiaries and products
+3. 🎯 Trending products (5 queries) - HIGH PRIORITY
+   → GitHub trending AI repos
+   → Reddit top AI tools discussions
+   → AI product aggregator updates
 
-4. Topic-specific search (10 queries)
-   → Funding announcements
-   → Product launches
-   → Policy/regulation
-   → Market performance
-   → Research breakthroughs
+4. 📊 Research & papers (5 queries) - MEDIUM PRIORITY
+   → arXiv AI papers (today)
+   → Major lab research announcements
+   → Conference proceedings
 
-5. Cross-reference verification (5 queries)
+5. 🤝 Activities & events (5 queries) - MEDIUM PRIORITY
+   → AI conferences this week
+   → Company keynotes/demos
+   → Open source releases
+
+6. 💼 Business & partnerships (5 queries) - MEDIUM PRIORITY
+   → Strategic product partnerships
+   → Major market shifts affecting products
+
+7. 💰 Funding (3 queries) - LOW PRIORITY
+   → Major funding only (≥$100M)
+   → IPOs and unicorn valuations
+
+8. Cross-reference verification (2 queries)
    → Verify top stories with official sources
-   → Check financial data with multiple sources
 
 Total: ~40 search queries
-Expected yield: 80-120 raw results
-Target output: 50 verified items
+Expected yield: 60-80 raw results
+Target output: 45-55 items with 60/30/10 ratio
+Content mix: 60% products/tools, 30% activities/business, 10% investment
 ```
 
 ---
 
-**Version**: 1.0
-**Last Updated**: 2025-01-07
-**Use Case**: Search query reference for daily-tech-news-search skill
+## Content Ratio Guidelines
+
+**Target Distribution** (based on user preferences):
+
+```yaml
+High Priority (60%): ~27 items
+  - Product Launches: 18 items (40%)
+  - Trending AI Tools: 9 items (20%)
+
+Medium Priority (30%): ~13 items
+  - Research & Papers: 7 items (15%)
+  - Activities & Events: 4 items (10%)
+  - Business & Strategy: 2 items (5%)
+
+Low Priority (10%): ~4-5 items
+  - Major Funding: 4-5 items (10%)
+  - Only rounds ≥$100M or strategic significance
+
+Total: 45-55 items (after validation)
+```
+
+---
+
+**Version**: 4.1.0
+**Last Updated**: 2025-11-22
+**Use Case**: Product-focused search strategy for daily-tech-news-search skill
+**Key Changes**: Added community sources, increased product focus, deprioritized investment news

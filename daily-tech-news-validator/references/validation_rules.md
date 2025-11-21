@@ -1,6 +1,7 @@
 # Validation Rules Reference
 
-> **Complete specification of hardcoded validation rules for daily-tech-news-validator v4.0**
+> **Complete specification of hardcoded validation rules for daily-tech-news-validator v4.1**
+> **v4.1 Update**: Added community sources + content type classification for product focus
 
 ## Domain Whitelists and Blacklists
 
@@ -59,6 +60,25 @@ Academic_Research:
   - openreview.net
   - research.google
   - research.fb.com
+
+Community_Product_Discovery:
+  - producthunt.com
+  - news.ycombinator.com (Hacker News)
+  - github.com/trending
+  - reddit.com/r/artificial
+  - reddit.com/r/MachineLearning
+  
+  Validation_Requirements:
+    - Must have significant engagement (>100 upvotes/stars)
+    - Clear product description and working link
+    - Published within 48 hours
+    - Cross-reference with official sources when available
+    
+  Credibility_Boost:
+    - Product Hunt: Featured product → 8/10
+    - Hacker News: Front page (>200 points) → 8/10
+    - GitHub: >500 stars in 48h → 8/10
+    - Reddit: >200 upvotes + verified → 7/10
 ```
 
 ### Blacklist (Auto-Reject)
@@ -110,6 +130,23 @@ Verified_Blogs:
   - medium.com/@karpathy
   - substack.com/profile/[verified-tech-journalist]
   - Must have: verified badge + 10K+ followers + consistent tech content
+
+Community_Exceptions:
+  Product_Hunt_Criteria:
+    - Must be in "Product of the Day" or top 10
+    - Maker must have verified account
+    - Product must have working demo/link
+    
+  Hacker_News_Criteria:
+    - "Show HN" posts with >50 points
+    - Top 30 on front page
+    - Positive comment sentiment (not controversy)
+    
+  GitHub_Criteria:
+    - Trending page (daily/weekly)
+    - >100 stars gained in 24-48h
+    - Active repository (recent commits)
+    - Clear README and documentation
 ```
 
 ## Timestamp Parsing Rules
@@ -691,7 +728,303 @@ def get_quality_grade(composite_score):
 
 ---
 
-**Version**: 4.0.0
+**Version**: 4.1.0
 **Rule Type**: Hardcoded (70%) + LLM-assisted (30%)
 **Update Frequency**: Monthly or as needed based on validation failures
 **Maintenance**: Add new domains/patterns as they emerge in real-world usage
+## Round 6: Content Type Classification (NEW in v4.1)
+
+### Purpose
+
+Classify news items by content type to implement 60/30/10 ratio (product/business/investment focus).
+
+### Content Type Categories
+
+```yaml
+Product_Launch: # HIGH PRIORITY (Weight: 1.0x)
+  Keywords_Required:
+    - Primary: "launch", "release", "unveil", "announce", "introduces", "available now"
+    - Products: "model", "tool", "app", "API", "SDK", "feature", "version"
+    - Examples: "GPT-5 launch", "new Claude API", "GitHub Copilot update"
+  
+  Exclusions:
+    - Pre-announcements without release date
+    - "Coming soon" without concrete timeline
+    - Vaporware or concept demos
+  
+  Scoring: 10/10 (highest priority)
+
+Trending_Product: # HIGH PRIORITY (Weight: 1.0x)
+  Sources_Required:
+    - Product Hunt (>100 upvotes)
+    - Hacker News (Show HN, >50 points)
+    - GitHub Trending (>100 stars in 48h)
+    - Reddit (>200 upvotes, r/artificial or r/MachineLearning)
+  
+  Validation:
+    - Must have working demo or live product
+    - Clear product name and description
+    - Community engagement metrics met
+  
+  Scoring: 9/10 (very high priority)
+
+Research_Activity: # MEDIUM PRIORITY (Weight: 0.8x)
+  Keywords_Required:
+    - "research paper", "study", "breakthrough", "discovery"
+    - "arXiv", "conference", "NeurIPS", "ICML", "CVPR"
+    - "open source", "GitHub release", "published findings"
+  
+  Validation:
+    - Must have paper link or GitHub repo
+    - Published within 48 hours
+    - From recognized lab or conference
+  
+  Scoring: 8/10
+
+Event_Activity: # MEDIUM PRIORITY (Weight: 0.7x)
+  Keywords_Required:
+    - "conference", "summit", "keynote", "demo day"
+    - "partnership" (product-focused only)
+    - "collaboration" (with deliverable)
+  
+  Validation:
+    - Must have event date or partnership details
+    - Product/tech focus (not generic business)
+  
+  Scoring: 7/10
+
+Business_News: # MEDIUM PRIORITY (Weight: 0.5x)
+  Keywords_Required:
+    - "strategy", "expansion", "enterprise adoption"
+    - "leadership" (C-level only)
+    - "partnership" (strategic, non-product)
+  
+  Exclusions:
+    - Generic HR announcements
+    - Routine operational updates
+    - Marketing fluff
+  
+  Scoring: 6/10
+
+Investment_Funding: # LOW PRIORITY (Weight: 0.3x)
+  Keywords_Required:
+    - "funding", "investment", "Series C/D/E", "IPO"
+    - "$XXM", "valuation", "raise", "venture capital"
+  
+  Strict_Filters:
+    - Amount ≥ $100 million (mandatory)
+    - Company must have shipped products (not pure R&D)
+    - Strategic significance beyond money
+  
+  Exclusions:
+    - Series A/B rounds (unless breakthrough tech)
+    - Routine venture rounds
+    - Acquisition rumors (confirmed only)
+  
+  Scoring: 3/10 (lowest priority)
+```
+
+### Classification Algorithm
+
+```python
+def classify_content_type(item):
+    """
+    Classify news item into content type categories
+    Returns: (category, score, confidence)
+    """
+    title = item['title'].lower()
+    content = item['content'].lower() if item.get('content') else ''
+    source = item['source']
+    
+    # Check Product Launch
+    product_keywords = ['launch', 'release', 'unveil', 'announce', 'introduces', 'available now']
+    product_nouns = ['model', 'tool', 'app', 'api', 'sdk', 'feature', 'version', 'gpt', 'claude', 'gemini']
+    
+    if any(kw in title for kw in product_keywords) and any(noun in title for noun in product_nouns):
+        if not any(excl in content for excl in ['coming soon', 'concept', 'preview']):
+            return ('Product_Launch', 10, 0.9)
+    
+    # Check Trending Product
+    if source in ['producthunt.com', 'news.ycombinator.com', 'github.com/trending']:
+        engagement = item.get('engagement', {})
+        if engagement.get('upvotes', 0) > 100 or engagement.get('stars', 0) > 100:
+            return ('Trending_Product', 9, 0.85)
+    
+    # Check Research Activity
+    research_keywords = ['research', 'paper', 'study', 'breakthrough', 'arxiv', 'conference']
+    if any(kw in title for kw in research_keywords):
+        if 'arxiv.org' in source or any(conf in content for conf in ['neurips', 'icml', 'cvpr']):
+            return ('Research_Activity', 8, 0.8)
+    
+    # Check Event Activity
+    event_keywords = ['conference', 'summit', 'keynote', 'demo day', 'partnership']
+    if any(kw in title for kw in event_keywords):
+        return ('Event_Activity', 7, 0.75)
+    
+    # Check Investment Funding
+    funding_keywords = ['funding', 'investment', 'series', 'raise', '$', 'million', 'valuation']
+    if any(kw in title for kw in funding_keywords):
+        amount = extract_funding_amount(content)
+        if amount and amount >= 100:  # $100M minimum
+            return ('Investment_Funding', 3, 0.7)
+        else:
+            return ('Investment_Funding', 1, 0.5)  # Below threshold, very low priority
+    
+    # Default: Business News
+    return ('Business_News', 6, 0.6)
+
+def extract_funding_amount(text):
+    """Extract funding amount in millions"""
+    import re
+    patterns = [
+        r'\$(\d+(?:\.\d+)?)\s*(?:million|M)',
+        r'\$(\d+(?:\.\d+)?)\s*(?:billion|B)',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            amount = float(match.group(1))
+            if 'billion' in match.group(0).lower() or 'B' in match.group(0):
+                amount *= 1000  # Convert to millions
+            return amount
+    return None
+```
+
+### Weighted Scoring System
+
+```python
+def apply_content_type_weights(items):
+    """
+    Apply weight multipliers based on content type
+    Returns: sorted list with weighted scores
+    """
+    weighted_items = []
+    
+    for item in items:
+        category, base_score, confidence = classify_content_type(item)
+        
+        # Get weight multiplier
+        weights = {
+            'Product_Launch': 1.0,
+            'Trending_Product': 1.0,
+            'Research_Activity': 0.8,
+            'Event_Activity': 0.7,
+            'Business_News': 0.5,
+            'Investment_Funding': 0.3
+        }
+        
+        weight = weights.get(category, 0.5)
+        final_score = base_score * weight * confidence
+        
+        item['content_type'] = category
+        item['content_score'] = final_score
+        item['content_weight'] = weight
+        weighted_items.append(item)
+    
+    # Sort by weighted score (descending)
+    weighted_items.sort(key=lambda x: x['content_score'], reverse=True)
+    
+    return weighted_items
+```
+
+### Selection Strategy (60/30/10 Ratio)
+
+```python
+def select_balanced_items(weighted_items, target_count=45):
+    """
+    Select items maintaining 60/30/10 ratio
+    
+    Target distribution:
+    - High Priority (Product + Trending): 60% (~27 items)
+    - Medium Priority (Research + Events + Business): 30% (~13 items)
+    - Low Priority (Investment): 10% (~4-5 items)
+    """
+    selected = []
+    
+    # High Priority: 27 items
+    high_priority = [item for item in weighted_items 
+                     if item['content_type'] in ['Product_Launch', 'Trending_Product']]
+    selected.extend(high_priority[:27])
+    
+    # Medium Priority: 13 items
+    medium_priority = [item for item in weighted_items 
+                       if item['content_type'] in ['Research_Activity', 'Event_Activity', 'Business_News']]
+    selected.extend(medium_priority[:13])
+    
+    # Low Priority: 5 items (investment only if ≥$100M)
+    low_priority = [item for item in weighted_items 
+                    if item['content_type'] == 'Investment_Funding']
+    low_priority_filtered = [item for item in low_priority 
+                             if extract_funding_amount(item.get('content', '')) >= 100]
+    selected.extend(low_priority_filtered[:5])
+    
+    # If we don't have enough items, backfill with next best
+    if len(selected) < target_count:
+        remaining = [item for item in weighted_items if item not in selected]
+        needed = target_count - len(selected)
+        selected.extend(remaining[:needed])
+    
+    return selected[:target_count]
+```
+
+### Quality Gate for Round 6
+
+```yaml
+Minimum_Requirements:
+  High_Priority_Count: ≥ 24 items (products + trending)
+  Medium_Priority_Count: ≥ 10 items (research + events + business)
+  Low_Priority_Count: ≤ 6 items (investment)
+  
+  Content_Type_Balance:
+    - No single type > 50% of total
+    - Product types must be ≥ 40% of total
+    - Investment must be ≤ 15% of total
+
+Pass_Criteria:
+  - High priority count ≥ 24 → ✅ PASS
+  - Investment count ≤ 6 → ✅ PASS
+  - Product ratio ≥ 40% → ✅ PASS
+  
+Fail_Actions:
+  - High priority < 24 → Request more product-focused searches
+  - Investment > 6 → Drop lowest-scored investment items
+  - Product ratio < 40% → Increase product weight, re-sort
+```
+
+### Round 6 Output
+
+```markdown
+## Round 6: Content Type Classification
+
+**Content Distribution**:
+- 🚀 Product Launches: 18 items (40%)
+- 🎯 Trending Products: 9 items (20%)
+- 📊 Research & Papers: 7 items (15%)
+- 🤝 Events & Activities: 4 items (9%)
+- 💼 Business News: 3 items (7%)
+- 💰 Investment (≥$100M): 4 items (9%)
+
+**Total**: 45 items
+**Ratio**: 60% high priority / 30% medium / 10% low ✅
+
+**Quality Gate**: PASS
+- Product focus ≥ 40%: ✅ 60%
+- Investment ≤ 15%: ✅ 9%
+- Balance maintained: ✅
+
+**Top Products Identified**:
+1. [Product Name] - [Company] - [Launch Date] - Score: 9.5/10
+2. [Trending Tool] - [Source: Product Hunt] - 250 upvotes - Score: 9.2/10
+...
+
+**Investment Items (Deprioritized)**:
+1. [Company] raises $150M Series C - Score: 2.1/10 (included for significance)
+2. [Company] IPO valued at $5B - Score: 2.5/10
+...
+```
+
+---
+
+**Version**: 4.1.0 - Round 6 Added
+**Purpose**: Product-focused content curation with quantitative ratio enforcement
+**Impact**: Reduces investment news from ~30% to ~10%, increases product coverage to ~60%
