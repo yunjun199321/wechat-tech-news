@@ -56,28 +56,26 @@ git clone https://github.com/your-org/wechat-tech-news.git
 使用 tech-news-workflow skill
 ```
 
-**Automatically**:
-1. 🔍 Searches ~50 tech news items (AI + Tech giants)
-2. ✓ Verifies through 5 quality rounds
-3. 🇨🇳 Optimizes for WeChat compliance
-4. 📱 Generates publication-ready content
+**Automatically** (5-Phase Pipeline):
+1. 🔍 **Collection**: Searches ~50 tech news items (AI + Tech giants)
+2. ✓ **Validation**: Verifies through 5 quality rounds with hardcoded rules
+3. ✍️ **Writing**: Transforms into WeChat article structure
+4. 🎨 **Formatting**: Multi-round optimization (compliance + grammar + punctuation)
+5. 📄 **Export**: Generates markdown + optional Word document
 
-**Time**: 25-40 minutes | **Output**: Publication-ready markdown
+**Time**: 30-45 minutes | **Output**: Publication-ready markdown + Word doc
 
 ---
 
-### 🔍 Skill 1: daily-tech-news-search
+### 🔍 Skill 1: daily-tech-news-search (Phase 1: Collection)
 
-**Deep research with systematic verification**
+**Pure data collection engine**
 
 - Uses `/sc:research --depth exhaustive --strategy unified`
-- Targets ~50 news items from major companies
-- **5-Round Verification**:
-  1. Source credibility (≥7/10)
-  2. Date validation (24h window, China timezone)
-  3. Deduplication (≥95% unique)
-  4. Completeness check (≥7/10)
-  5. Final quality gate (balance + compliance)
+- Targets 45-55 raw news items from major companies
+- Product-focused search (60% products, 30% activities, 10% investment)
+- Includes community sources: Product Hunt, Hacker News, GitHub Trending
+- Basic AI keyword filtering only (deep validation delegated to Phase 2)
 
 **Coverage**: OpenAI, Anthropic, Google, Microsoft, Meta, NVIDIA, Tesla, Alibaba, Tencent, Baidu, ByteDance, Huawei, and more
 
@@ -88,51 +86,87 @@ git clone https://github.com/your-org/wechat-tech-news.git
 
 ---
 
-### 📱 Skill 2: wechat-tech-news-writer
+### ✅ Skill 2: daily-tech-news-validator (Phase 2: Validation)
 
-**Transform news into WeChat-compliant articles**
+**Hardcoded validation engine with mandatory quality gates**
 
-- **Structure Optimization**:
-  - 🇨🇳/🌍 Domestic/International categorization
-  - 🎯 Theme-based alternative
-  - 🌟 Focus Highlights (5 headline items)
-
-- **Compliance Optimization**:
-  - 100+ sensitive keyword replacements
-  - 3-tier risk classification (🔴🟡🟢)
-  - Military/defense neutralization
-  - US-China policy framing
-  - Financial disclaimer automation
-
-- **WeChat Elements**:
-  - 引导语 (opening hook)
-  - 目录 (table of contents)
-  - 免责声明 (compliance disclaimers)
-  - 互动引导 (engagement prompts)
-  - 相关阅读 (related reading)
+- **5 Validation Rounds**:
+  1. Source credibility (domain whitelist/blacklist, 7-10/10)
+  2. Time accuracy (strict 48h window, China timezone UTC+8)
+  3. AI relevance (keyword matching + exclusion patterns)
+  4. Deduplication (similarity detection, ≥95% unique)
+  5. Quality assurance (completeness, geographic balance)
+- **Round 6 (NEW v4.1)**: Content type classification for 60/30/10 ratio
+- Generates `validation_report.md` with pass/fail gates
+- Outputs validated JSON (40-45 items)
 
 **Usage**:
 ```
-使用 wechat-tech-news-writer skill [input-file]
+使用 daily-tech-news-validator skill [raw-file]
 ```
 
 ---
 
-### 🔄 Skill 3: tech-news-workflow
+### ✍️ Skill 3: wechat-tech-news-writer (Phase 3: Content Writing)
+
+**Pure content writing engine (NO formatting or compliance)**
+
+- **Structure Creation**:
+  - 🇨🇳/🌍 Domestic/International categorization
+  - 🎯 Theme-based alternative structure
+  - 🌟 "48小时焦点" Focus Highlights (5 headline items)
+
+- **WeChat Elements**:
+  - 引导语 (opening hook)
+  - 目录 (table of contents)
+  - 互动引导 (engagement prompts)
+  - 相关阅读 (related reading)
+
+- **Note**: Compliance optimization delegated to Phase 4 (Formatter)
+- Outputs unoptimized draft: `tech_news_[DATE]_wechat_draft.md`
+
+**Usage**:
+```
+使用 wechat-tech-news-writer skill [validated-json]
+```
+
+---
+
+### 🎨 Skill 4: daily-tech-news-formatter (Phase 4: Multi-Round Optimization)
+
+**Systematic content optimization with 5 rounds**
+
+- **Round 1**: WeChat compliance (100+ sensitive keyword substitutions, 3-tier risk 🔴🟡🟢)
+- **Round 2**: Grammar refinement (readability, flow, transitions)
+- **Round 3**: Punctuation normalization (Chinese standards: 。，、：；！？)
+- **Round 4**: Title enhancement (clickability, SEO optimization)
+- **Round 5**: Final polish (consistency check, formatting cleanup)
+
+- Generates `format_report.md` with before/after comparisons
+- Outputs publication-ready: `tech_news_[DATE]_wechat_final.md`
+
+**Usage**:
+```
+使用 daily-tech-news-formatter skill [draft-file]
+```
+
+---
+
+### 🔄 Skill 5: tech-news-workflow (Phase 5: Orchestration)
 
 **End-to-end automation orchestration**
 
 **Pipeline**:
 ```
-Initialize → Research (Phase 1) → Quality Gate →
-Optimize (Phase 2) → Final Validation → Output
+Initialize → Collection (P1) → Validation (P2) →
+Writing (P3) → Formatting (P4) → Export (P5) → Output
 ```
 
 **Features**:
-- Two-phase execution with quality gates
-- Error recovery and automatic retry
-- Execution metadata tracking
-- Customizable parameters
+- Five-phase execution with quality gates between ALL phases
+- Phase-specific error recovery and automatic retry
+- Comprehensive execution metadata in `workflow_[DATE].json`
+- Customizable parameters for each phase
 
 **Usage**:
 ```
@@ -313,17 +347,21 @@ Publication Readiness   ≥80%      85-90%
 ## Documentation
 
 - **[README.md](README.md)** - This file
-- **[daily-tech-news-search/SKILL.md](skills/daily-tech-news-search/SKILL.md)** - Research methodology
-- **[wechat-tech-news-writer/SKILL.md](skills/wechat-tech-news-writer/SKILL.md)** - Optimization details
-- **[tech-news-workflow/SKILL.md](skills/tech-news-workflow/SKILL.md)** - Workflow orchestration
+- **[daily-tech-news-search/SKILL.md](daily-tech-news-search/SKILL.md)** - Research methodology
+- **[daily-tech-news-validator/SKILL.md](daily-tech-news-validator/SKILL.md)** - Validation engine
+- **[wechat-tech-news-writer/SKILL.md](wechat-tech-news-writer/SKILL.md)** - Content writing
+- **[daily-tech-news-formatter/SKILL.md](daily-tech-news-formatter/SKILL.md)** - Multi-round optimization
+- **[tech-news-workflow/SKILL.md](tech-news-workflow/SKILL.md)** - Workflow orchestration
 
 ### Reference Guides
 
-- **[search_queries.md](skills/daily-tech-news-search/references/search_queries.md)** - Search customization
-- **[verification_process.md](skills/daily-tech-news-search/references/verification_process.md)** - Quality control
-- **[compliance_guidelines.md](skills/wechat-tech-news-writer/references/compliance_guidelines.md)** - Compliance rules
-- **[sensitive_keywords.md](skills/wechat-tech-news-writer/references/sensitive_keywords.md)** - Keyword database
-- **[engagement_tactics.md](skills/wechat-tech-news-writer/references/engagement_tactics.md)** - Audience engagement
+- **[search_queries.md](daily-tech-news-search/references/search_queries.md)** - Search customization
+- **[verification_process.md](daily-tech-news-search/references/verification_process.md)** - Quality control (deprecated in v4.0)
+- **[validation_rules.md](daily-tech-news-validator/references/validation_rules.md)** - Hardcoded validation rules
+- **[compliance_guidelines.md](wechat-tech-news-writer/references/compliance_guidelines.md)** - Compliance rules
+- **[sensitive_keywords.md](wechat-tech-news-writer/references/sensitive_keywords.md)** - Keyword database
+- **[engagement_tactics.md](wechat-tech-news-writer/references/engagement_tactics.md)** - Audience engagement
+- **[punctuation_guide.md](daily-tech-news-formatter/references/punctuation_guide.md)** - Chinese punctuation standards
 
 ## Use Cases
 
@@ -366,4 +404,4 @@ MIT License - see [LICENSE](LICENSE) file
 
 **Plugin Homepage**: https://github.com/your-org/wechat-tech-news
 **Claude Code Marketplace**: Search "wechat-tech-news"
-**Version**: 1.0.0 | **License**: MIT | **Status**: Production Ready ✅
+**Version**: 4.0.0 | **License**: MIT | **Status**: Production Ready ✅
