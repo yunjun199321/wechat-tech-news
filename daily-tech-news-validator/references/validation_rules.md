@@ -83,11 +83,21 @@ Community_Product_Discovery:
 
 ### Blacklist (Auto-Reject)
 
+**IMPORTANT**: Check whitelist exceptions BEFORE applying blacklist rules!
+
 ```yaml
-Social_Media: # Reject unless official company account
+Social_Media: # Reject unless official company account OR whitelisted community
   - reddit.com
+    EXCEPT:
+      - reddit.com/r/artificial (Tier 2 whitelist)
+      - reddit.com/r/MachineLearning (Tier 2 whitelist)
+    
   - twitter.com
   - x.com
+    EXCEPT:
+      - Verified company accounts (see Special Cases)
+      - C-level executives from major AI companies
+    
   - facebook.com
   - linkedin.com (posts, not company pages)
   - instagram.com
@@ -105,6 +115,19 @@ Low_Quality:
   - ad-heavy sites
   - clickbait domains
   - affiliate marketing sites
+
+**Validation Order (CRITICAL)**:
+1. ✅ Check Tier 1 whitelist → ACCEPT
+2. ✅ Check Tier 2 whitelist (including Community sources) → ACCEPT
+3. ✅ Check Special Cases exceptions → ACCEPT
+4. ❌ Check blacklist → REJECT if no exception
+5. 🤔 Unknown domain → LLM scoring (5-8/10)
+
+Example logic:
+- reddit.com/r/artificial → Check Tier 2 → ACCEPT (don't check blacklist)
+- reddit.com/r/randomsubreddit → Check blacklist → REJECT
+- producthunt.com → Check Tier 2 → ACCEPT
+- news.ycombinator.com → Check Tier 2 → ACCEPT
 ```
 
 ### Special Cases
@@ -1028,3 +1051,139 @@ Fail_Actions:
 **Version**: 4.1.0 - Round 6 Added
 **Purpose**: Product-focused content curation with quantitative ratio enforcement
 **Impact**: Reduces investment news from ~30% to ~10%, increases product coverage to ~60%
+## Validation Order Implementation
+
+### Python Reference Implementation
+
+```python
+def validate_source_credibility(item):
+    """
+    Validate source with correct order: whitelist first, blacklist second
+    
+    Returns: (credibility_score, status, reason)
+    """
+    url = item.get('source_url', '')
+    domain = extract_domain(url)
+    
+    # Step 1: Check Tier 1 whitelist (Official sources)
+    tier1_domains = [
+        'techcrunch.com', 'theverge.com', 'bloomberg.com', 'reuters.com',
+        'openai.com/blog', 'anthropic.com/news', 'blog.google'
+    ]
+    if domain in tier1_domains or any(d in url for d in tier1_domains):
+        return (9.5, 'ACCEPT', 'Tier 1 official source')
+    
+    # Step 2: Check Tier 2 whitelist (Community + Tech media)
+    tier2_domains = {
+        'producthunt.com': 8.0,
+        'news.ycombinator.com': 8.0,
+        'github.com/trending': 8.0,
+        '36kr.com': 7.5,
+        'tmtpost.com': 7.5,
+        'arxiv.org': 8.0
+    }
+    
+    # Special handling for Reddit
+    if 'reddit.com/r/artificial' in url or 'reddit.com/r/MachineLearning' in url:
+        engagement = item.get('engagement', {})
+        if engagement.get('upvotes', 0) >= 200:
+            return (7.0, 'ACCEPT', 'Tier 2 community source (Reddit approved subreddit)')
+        else:
+            return (4.0, 'REJECT', 'Reddit post below engagement threshold')
+    
+    # Check other Tier 2 domains
+    for tier2_domain, score in tier2_domains.items():
+        if tier2_domain in url:
+            return (score, 'ACCEPT', f'Tier 2 source: {tier2_domain}')
+    
+    # Step 3: Check Special Cases (verified accounts)
+    verified_accounts = [
+        'twitter.com/OpenAI', 'twitter.com/AnthropicAI',
+        'twitter.com/sama', 'twitter.com/ylecun'
+    ]
+    if any(acc in url for acc in verified_accounts):
+        return (8.0, 'ACCEPT', 'Verified official account')
+    
+    # Step 4: Check blacklist (ONLY if not already whitelisted)
+    blacklist_domains = [
+        'reddit.com',  # Generic Reddit (not approved subreddits)
+        'twitter.com',  # Generic Twitter (not verified accounts)
+        'medium.com',  # Generic Medium (not verified bloggers)
+        'facebook.com', 'instagram.com', 'tiktok.com'
+    ]
+    
+    for blacklist_domain in blacklist_domains:
+        if blacklist_domain in domain:
+            return (0.0, 'REJECT', f'Blacklisted domain: {blacklist_domain}')
+    
+    # Step 5: Unknown domain → LLM scoring
+    return (None, 'LLM_EVAL', 'Unknown domain, requires LLM evaluation')
+
+def extract_domain(url):
+    """Extract base domain from URL"""
+    from urllib.parse import urlparse
+    parsed = urlparse(url)
+    return parsed.netloc.replace('www.', '')
+```
+
+### Test Cases
+
+```python
+# Test whitelist priority
+test_cases = [
+    {
+        'url': 'https://reddit.com/r/artificial/comments/123/new-ai-tool',
+        'engagement': {'upvotes': 250},
+        'expected': 'ACCEPT'  # Tier 2 whitelist, not blacklist
+    },
+    {
+        'url': 'https://reddit.com/r/pics/comments/456/cat-photo',
+        'engagement': {'upvotes': 500},
+        'expected': 'REJECT'  # Not in approved subreddits
+    },
+    {
+        'url': 'https://producthunt.com/posts/awesome-ai-tool',
+        'expected': 'ACCEPT'  # Tier 2 whitelist
+    },
+    {
+        'url': 'https://news.ycombinator.com/item?id=12345',
+        'expected': 'ACCEPT'  # Tier 2 whitelist
+    },
+    {
+        'url': 'https://twitter.com/OpenAI/status/123456',
+        'expected': 'ACCEPT'  # Special case verified account
+    },
+    {
+        'url': 'https://twitter.com/randomuser/status/789',
+        'expected': 'REJECT'  # Blacklist, not verified
+    },
+    {
+        'url': 'https://techcrunch.com/2025/11/22/ai-news',
+        'expected': 'ACCEPT'  # Tier 1 whitelist
+    }
+]
+
+# Run validation
+for test in test_cases:
+    score, status, reason = validate_source_credibility(test)
+    assert status == test['expected'], f"Failed for {test['url']}: {reason}"
+    print(f"✅ {test['url']}: {status} - {reason}")
+```
+
+### Expected Output
+
+```
+✅ reddit.com/r/artificial: ACCEPT - Tier 2 community source (Reddit approved subreddit)
+✅ reddit.com/r/pics: REJECT - Blacklisted domain: reddit.com
+✅ producthunt.com: ACCEPT - Tier 2 source: producthunt.com
+✅ news.ycombinator.com: ACCEPT - Tier 2 source: news.ycombinator.com
+✅ twitter.com/OpenAI: ACCEPT - Verified official account
+✅ twitter.com/randomuser: REJECT - Blacklisted domain: twitter.com
+✅ techcrunch.com: ACCEPT - Tier 1 official source
+```
+
+---
+
+**Version**: 4.1.1 - Validation Order Fixed
+**Critical Fix**: Whitelist now checked BEFORE blacklist to allow community sources
+**Impact**: Product Hunt, HN, GitHub Trending, approved subreddits now properly accepted

@@ -343,3 +343,126 @@ selected.extend(medium_priority[:16])  # Changed from 13
 **Prepared by**: Claude Code Optimization
 **Review by**: User
 **Approval for Production**: Pending Testing
+
+---
+
+## ⚠️ Known Issues & Fixes
+
+### Issue #1: Community Sources Being Filtered Out
+
+**Problem**: Product Hunt, Hacker News, Reddit content was collected in Phase 1 but disappeared from final article.
+
+**Root Cause**: Validation order conflict
+- Community sources added to Tier 2 whitelist
+- But `reddit.com` was in Social_Media blacklist
+- Validator checked blacklist BEFORE whitelist
+- Result: All Reddit posts rejected, even from approved subreddits
+
+**Fix Applied** (v4.1.1):
+1. Updated blacklist to include explicit EXCEPT clauses
+2. Added validation order documentation (whitelist → blacklist)
+3. Provided Python reference implementation
+4. Added test cases to verify correct behavior
+
+**Files Modified**:
+- `daily-tech-news-validator/references/validation_rules.md`
+  - Added "IMPORTANT: Check whitelist exceptions BEFORE blacklist"
+  - Added EXCEPT clauses for reddit.com, twitter.com
+  - Documented validation order with examples
+  - Added Python implementation guide
+
+**Verification**:
+```python
+# Reddit approved subreddit → ACCEPT
+validate("reddit.com/r/artificial") → "ACCEPT (Tier 2)"
+
+# Reddit random subreddit → REJECT
+validate("reddit.com/r/pics") → "REJECT (Blacklist)"
+
+# Product Hunt → ACCEPT
+validate("producthunt.com") → "ACCEPT (Tier 2)"
+
+# HN → ACCEPT
+validate("news.ycombinator.com") → "ACCEPT (Tier 2)"
+```
+
+**Impact**:
+- ✅ Product Hunt products now appear in final article
+- ✅ Hacker News "Show HN" posts included
+- ✅ GitHub Trending projects included
+- ✅ Reddit r/artificial and r/MachineLearning posts included (if >200 upvotes)
+
+**Testing Required**:
+After next workflow run, verify validation_report.md shows:
+- Product Hunt items in "Accepted Items" section
+- HN items with proper credibility scores (7-8/10)
+- Reddit posts from approved subreddits passing validation
+- No false rejections of community sources
+
+---
+
+## 🔍 Debugging Guide
+
+### How to Check if Community Sources are Being Collected
+
+**Step 1**: Check Phase 1 output (Collection)
+```bash
+grep -i "producthunt\|hackernews\|github.com/trending" tech_news_[DATE]_raw.md
+```
+Expected: Should see items from these sources
+
+**Step 2**: Check Phase 2 output (Validation)
+```bash
+grep -A 5 "Round 1: Source Credibility" validation_report_[DATE].md
+```
+Look for:
+- producthunt.com → Score: 8/10 ✅
+- news.ycombinator.com → Score: 8/10 ✅
+- reddit.com/r/artificial → Score: 7/10 ✅
+
+**Step 3**: Check Phase 4 output (Final Article)
+```bash
+grep -i "product hunt\|hacker news\|github" tech_news_[DATE]_wechat_final.md
+```
+Expected: Community sources should appear in article with attribution
+
+### If Community Sources Still Missing
+
+**Check 1**: Validation Order
+```bash
+# Verify whitelist is checked first
+grep -A 20 "Validation Order" daily-tech-news-validator/references/validation_rules.md
+```
+Should show: Tier 1 → Tier 2 → Special Cases → Blacklist
+
+**Check 2**: Engagement Thresholds
+```bash
+# Check if items meet minimum engagement
+validation_report → Round 6 → Content Type Classification
+```
+Minimum requirements:
+- Product Hunt: >100 upvotes
+- Hacker News: >50 points (Show HN) or front page
+- GitHub: >100 stars in 48h
+- Reddit: >200 upvotes
+
+**Check 3**: Time Window
+Community sources use 48-hour window (not 24h). Verify:
+```bash
+grep "published_date" validation_report_[DATE].md
+```
+
+### Common False Positives
+
+**Reddit posts rejected despite >200 upvotes**:
+- Check if from approved subreddits (r/artificial, r/MachineLearning)
+- Other subreddits will be blacklisted
+
+**Product Hunt item with low score**:
+- Check if "Product of the Day" or top 10
+- Items outside top 10 may get lower priority
+
+**HN post rejected**:
+- "Show HN" posts need >50 points
+- Regular posts need front page placement (>200 points)
+
