@@ -1,11 +1,11 @@
 ---
 name: daily-tech-news-search
-description: Pure data collection engine for daily AI tech news. Searches 45-55 raw items from major AI companies using deep research with strict 48h time window. No validation - delegates to daily-tech-news-validator.
+description: Pure data collection engine for daily AI tech news with product focus (60/30/10 ratio). Searches 45-55 raw items from major companies AND community platforms (Product Hunt, HN, GitHub). Strict 48h time window. No validation - delegates to daily-tech-news-validator.
 ---
 
 # Daily Tech News Search
 
-> **🔍 Version 4.0**: Pure collection engine - validation delegated to dedicated validator skill
+> **🔍 Version 4.1**: Product-focused collection engine with community discovery - validation delegated to dedicated validator skill
 
 ## When to Use This Skill
 
@@ -26,24 +26,49 @@ Use this skill when you need to:
 **Output**: `tech_news_[YYYYMMDD]_raw.md`
 **Next Phase**: Pass to daily-tech-news-validator for quality assurance
 
-## Core Workflow (v4.0 - Collection Only)
+## Core Workflow (v4.1 - Product-Focused Collection)
 
 1. **Auto-Calculate Date** - Determines current date in China timezone (UTC+8)
-2. **Time-Progressive Search** - Prioritizes freshness
+2. **Product-First Search Strategy** - NEW: Community platforms prioritized
+   - **Phase 4 First**: Community discovery (Product Hunt, HN, GitHub) - 20-25 items (40%)
+   - **Phase 1 Second**: Major companies (OpenAI, Google, etc.) - 15-20 items (30%)
+   - **Phase 2/3 Last**: Topics and geographic balance - 10-15 items (30%)
+3. **Time-Progressive Filtering** - Prioritizes freshness
    - **Priority 1**: Today's news (Layer 0, 0-24h) - Collect as many as possible
    - **Priority 2**: Yesterday if needed (Layer 1, 24-48h) - Supplement to reach 45-55 items
    - **Priority 3**: ❌ Auto-disabled (>48h rejected to maintain freshness)
-3. **Deep Research** - Executes `/sc:research --depth exhaustive --strategy unified`
-4. **AI-Focus Filtering** - Only collect AI-relevant news (basic keyword check)
-5. **Structured Output** - Generates markdown with ~45-55 raw items + metadata
+4. **Deep Research** - Executes `/sc:research --depth exhaustive --strategy unified`
+5. **Content Filtering** - Deprioritize financial news, prioritize product launches
+6. **Structured Output** - Generates markdown with ~45-55 raw items targeting 60% products
 
-## Search Coverage (AI-Focused)
+## Search Coverage (AI-Focused with Product Priority)
 
-**Primary Focus**: OpenAI, Anthropic, Google AI, Microsoft AI, Meta AI, Amazon AI, xAI, Mistral AI
-**Secondary Focus**: NVIDIA/AMD (AI chips only), Apple Intelligence, AI tools/products, Chinese AI companies
-**Tertiary Focus**: Major AI funding (>$100M), breakthrough AI research, AI policy, AI security/safety
+**PRIMARY FOCUS** (60% target - Products & Tools):
+- **Community Platforms**: Product Hunt, Hacker News, GitHub Trending, Reddit (r/artificial, r/MachineLearning)
+- **Major Company Products**: OpenAI, Anthropic, Google AI, Microsoft AI, Meta AI, Amazon AI, xAI, Mistral AI
+- **AI Tools & Apps**: Productivity tools, coding assistants, image/video generators, writing tools
+- **Open Source**: GitHub trending repos, community-driven projects with working demos
 
-**Excluded**: General semiconductor manufacturing, non-AI hardware, traditional tech news, pure quantum computing
+**SECONDARY FOCUS** (30% target - Strategic Activities):
+- **Infrastructure**: NVIDIA/AMD AI chips, data centers, compute platforms
+- **Partnerships**: Product-focused integrations only (e.g., "Claude on Azure")
+- **Research**: Major papers with code release, conference highlights
+- **Policy**: Direct product impact (e.g., "EU AI Act affects chatbots")
+- **Chinese AI**: Baidu, Alibaba, ByteDance, Tencent, SenseTime, DeepSeek
+
+**TERTIARY FOCUS** (10% target - Investment & Business):
+- **Major Funding**: ≥$100M rounds for AI companies with shipped products
+- **Strategic Business**: M&A, IPOs, market-moving executive changes
+- **Financial Results**: ONLY if >20% beat/miss + product announcements
+
+**EXCLUDED** (Deprioritized or Removed):
+- Stock price movements without product context
+- Routine earnings reports
+- Generic partnerships without product integration
+- Executive changes below C-level
+- General semiconductor manufacturing
+- Non-AI hardware announcements
+- Traditional tech news labeled as "AI"
 
 ## Search Strategy
 
@@ -104,22 +129,197 @@ Chinese_AI:
   - Search Chinese tech media: 36kr, tmtpost, etc.
 ```
 
-## Basic AI Relevance Filtering
+### Phase 4: Community Product Discovery (HIGH PRIORITY - 40% target)
 
-**During Search** (lightweight filtering to reduce noise):
+**🎯 Critical for 60/30/10 ratio**: This phase discovers trending AI products from community platforms that traditional media often misses.
+
+Execute searches on community platforms for viral AI tools and indie products:
+
+```yaml
+Product_Hunt (Target: 8-10 items):
+  Primary_Queries:
+    - site:producthunt.com "AI" (sort by upvotes, today + yesterday)
+    - site:producthunt.com "AI tool" "featured"
+    - site:producthunt.com "machine learning" OR "LLM" OR "GPT"
+
+  Filters:
+    - >100 upvotes (indicates strong community interest)
+    - Clear product description and working demo link
+    - Published within 48 hours
+    - Actual product (not just concepts or waitlists)
+
+  Focus:
+    - AI productivity tools, browser extensions, coding assistants
+    - Image/video generation tools, writing assistants
+    - Open-source AI projects with demos
+    - AI automation and workflow tools
+
+Hacker_News (Target: 5-7 items):
+  Primary_Queries:
+    - site:news.ycombinator.com "Show HN" "AI"
+    - site:news.ycombinator.com "Show HN" "LLM" OR "GPT"
+    - site:news.ycombinator.com/front (AI-related, >200 points)
+
+  Filters:
+    - "Show HN" posts: >50 points
+    - Front page posts: >200 points
+    - Active discussion (>30 comments indicates interest)
+    - Working demo or open-source code available
+
+  Focus:
+    - Technical AI projects with code
+    - Novel AI applications and experiments
+    - AI research implementations
+    - Developer tools and libraries
+
+GitHub_Trending (Target: 4-6 items):
+  Primary_Queries:
+    - site:github.com/trending "AI" "machine learning"
+    - site:github.com/trending "LLM" OR "language model"
+    - site:github.com/trending python "AI agent"
+    - site:github.com/trending typescript "AI"
+
+  Filters:
+    - >100 stars gained in past 48 hours
+    - Clear README with demo/screenshots
+    - Active development (recent commits)
+    - Practical application (not just research papers)
+
+  Focus:
+    - AI frameworks and SDKs
+    - LLM tooling and infrastructure
+    - AI agents and automation
+    - Model deployment tools
+
+Reddit_AI_Communities (Target: 2-4 items):
+  Primary_Queries:
+    - site:reddit.com/r/artificial "new AI tool" OR "launched"
+    - site:reddit.com/r/MachineLearning "project" OR "demo"
+    - site:reddit.com/r/LocalLLaMA (practical AI applications)
+
+  Filters:
+    - >200 upvotes (quality threshold)
+    - Verified working links
+    - Positive community sentiment (check comments)
+    - Only approved subreddits (r/artificial, r/MachineLearning, r/LocalLLaMA)
+
+  Focus:
+    - Community-vetted AI tools
+    - Open-source projects getting traction
+    - Practical AI applications
+    - Local AI deployments and tools
+
+⚠️ **Critical**: This phase should contribute 20-25 items (40% of 50 total) to achieve product-focused 60/30/10 ratio
+```
+
+**Why Community Sources Matter**:
+- Traditional media focuses on big companies (Google, OpenAI, Microsoft)
+- Community platforms surface innovative indie tools and startups
+- Higher engagement = proven user interest and product-market fit
+- These are the "有趣AI产品，讨论度高的AI产品" users want
+
+**Search Execution Order**:
+1. Phase 1: Major companies (15-20 items) - Baseline coverage
+2. **Phase 4: Community discovery (20-25 items)** - EXECUTE BEFORE Phase 2 to prioritize products
+3. Phase 2: Topics (5-10 items) - Fill gaps
+4. Phase 3: Geographic (5-8 items) - Balance coverage
+
+## Content Prioritization & Filtering (v4.1 - Product Focus)
+
+**During Search** (lightweight filtering to achieve 60/30/10 ratio):
+
+### HIGH PRIORITY (Collect More) - Products & Tools
+
+```yaml
+Strongly_Include:
+  Product_Launches:
+    - Keywords: "launch", "release", "unveil", "introduce", "announce" + product name
+    - Examples: "launches AI tool", "releases new model", "unveils platform"
+    - Weight: HIGHEST (target 60% of collection)
+
+  Feature_Updates:
+    - Keywords: "new feature", "update", "improvement", "beta", "available now"
+    - Examples: "adds AI capability", "new API", "beta access"
+
+  Community_Products:
+    - From: Product Hunt, Hacker News, GitHub Trending, Reddit
+    - ALL items from these sources get HIGH priority
+    - Minimum engagement thresholds ensure quality
+
+  Open_Source:
+    - Keywords: "open source", "GitHub", "Apache", "MIT license"
+    - Community-driven projects and tools
+```
+
+### MEDIUM PRIORITY (Selective Collection) - Strategic Activities
+
+```yaml
+Selectively_Include:
+  Strategic_Partnerships:
+    - ONLY if involves product integration or deployment
+    - Example: "partnership to deploy AI on Azure" ✅
+    - Example: "strategic alliance announced" ❌ (too vague)
+
+  Research_Breakthroughs:
+    - Major papers from top labs (DeepMind, OpenAI Research, Meta FAIR)
+    - Conference papers (NeurIPS, ICML) with code release
+
+  Policy_Changes:
+    - Direct product impact only
+    - Example: "EU AI Act affects chatbots" ✅
+    - Example: "AI regulation discussion continues" ❌
+```
+
+### LOW PRIORITY (Minimize Collection) - Financial & Personnel
+
+```yaml
+Deprioritize:
+  Financial_News:
+    - Stock movements: Include ONLY if >5% single-day change + major product news
+    - Earnings reports: Include ONLY if beats/misses by >20% + product announcements
+    - Revenue projections: Include ONLY if tied to specific product line
+
+  Executive_Changes:
+    - Include ONLY C-level at major AI companies (OpenAI, Anthropic, Google AI)
+    - Skip: VP appointments, board changes, advisor announcements
+
+  Generic_Partnerships:
+    - Skip partnerships without clear product outcome
+    - Skip "exploring collaboration" or "framework agreements" without specifics
+
+Exclude_Completely:
+  - Stock price movements without product context
+  - Routine earnings beats/misses without surprises
+  - Financial analyst upgrades/downgrades
+  - Executive compensation details
+  - Office openings/closings
+  - Generic "AI is important" statements from executives
+  - Conference attendance announcements
+  - Hiring announcements
+```
+
+### AI Relevance Filtering
 
 ```yaml
 Include_if:
-  - Title contains: AI, GPT, Claude, Gemini, LLM, machine learning, deep learning
-  - OR: Company in primary/secondary focus list + article mentions AI
-  - OR: Funding amount >$100M + AI keyword in description
+  - Title contains: AI, GPT, Claude, Gemini, LLM, machine learning, deep learning, neural network
+  - OR: Company in primary/secondary focus list + article mentions AI product
+  - OR: Community source (Product Hunt, HN, GitHub) + AI keyword
+  - OR: Funding amount >$100M + AI product mentioned
 
 Exclude_if:
   - Title contains: rare earth, lithography, 5G, blockchain (without AI context)
   - AND: No AI keywords in first 200 characters of content
+  - Pure hardware manufacturing without AI application
+  - Traditional tech news repurposed as "AI news"
 ```
 
-**Note**: This is basic filtering only. Comprehensive validation done by validator skill.
+**Target Collection Distribution** (for ~50 items):
+- 🚀 Products & Tools: 30 items (60%) - Product Hunt, HN, GitHub, major launches
+- 🤝 Strategic Activities: 15 items (30%) - Partnerships, research, policy
+- 💰 Investment & Business: 5 items (10%) - Major funding (≥$100M), significant business events
+
+**Note**: This is initial filtering. Validator skill (Phase 2) enforces strict 60/30/10 ratio with weighted scoring.
 
 ## Output Format
 
