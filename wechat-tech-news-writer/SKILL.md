@@ -344,7 +344,7 @@ Bad:
 ## Output Format
 
 ```markdown
-# 本周AI科技动态 | 2025年11月12日-11月18日
+# 48小时AI科技速递 | 2025年11月12日-11月18日
 
 > **引导语**
 >
@@ -466,15 +466,6 @@ Bad:
 
 关注本公众号，每日获取精选AI科技新闻，不错过重要动态！
 
----
-
-**生成信息**
-- 来源: tech_news_20251120_validated.json
-- 生成时间: 2025-11-20 17:00:00 CST
-- 内容项: 42 (原始45，合并3组重复)
-- 版本: wechat-tech-news-writer v4.0.0 (draft)
-- 状态: DRAFT - Awaiting formatting optimization
-- 下一步: daily-tech-news-formatter (合规、标点、语法、标题优化)
 ```
 
 ## Integration with v4.0 Workflow
