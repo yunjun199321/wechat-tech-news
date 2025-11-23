@@ -22,7 +22,7 @@
         "./daily-tech-news-validator",
         "./wechat-tech-news-writer",
         "./daily-tech-news-formatter",
-        "./tech-news-workflow"
+        "./wechat-tech-news"
       ]
     }
   ]

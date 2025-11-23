@@ -1,5 +1,5 @@
 ---
-name: tech-news-workflow
+name: wechat-tech-news
 description: Complete 5-phase automated workflow for daily tech news - collection, validation, writing, formatting, and export. Orchestrates all skills with quality gates between phases. One-command solution from search to publication-ready content with Word export.
 ---
 
@@ -20,7 +20,7 @@ Use this skill when you need:
 ## Quick Start
 
 ```bash
-使用 tech-news-workflow skill
+使用 wechat-tech-news skill
 ```
 
 **Execution Time**: 30-45 minutes (average: 35 min)
@@ -38,7 +38,7 @@ Use this skill when you need:
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                     tech-news-workflow v4.0                      │
+│                     wechat-tech-news v4.0                        │
 │                                                                  │
 │  Phase 1      Phase 2       Phase 3      Phase 4      Phase 5  │
 │  ─────────→  ─────────→   ─────────→   ─────────→   ────────  │
@@ -545,22 +545,22 @@ Actions:
 
 ```bash
 # Basic usage (auto date, default settings)
-使用 tech-news-workflow skill
+使用 wechat-tech-news skill
 
 # Custom date
-使用 tech-news-workflow skill --date 2025-11-21
+使用 wechat-tech-news skill --date 2025-11-21
 
 # Skip Phase 5 (export)
-使用 tech-news-workflow skill --skip-export
+使用 wechat-tech-news skill --skip-export
 
 # Skip Phase 1 (use existing raw file)
-使用 tech-news-workflow skill --skip-collection --raw-file tech_news_20251120_raw.md
+使用 wechat-tech-news skill --skip-collection --raw-file tech_news_20251120_raw.md
 
 # Force validation thresholds (advanced)
-使用 tech-news-workflow skill --validation-threshold 6.5
+使用 wechat-tech-news skill --validation-threshold 6.5
 
 # Custom output directory
-使用 tech-news-workflow skill --output-dir /path/to/output
+使用 wechat-tech-news skill --output-dir /path/to/output
 ```
 
 ## Performance Benchmarks

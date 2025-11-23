@@ -55,12 +55,12 @@ Quality Gates: ✓ After EVERY phase (mandatory)
 - Generates `format_report_[DATE].md` (before/after comparisons)
 - Output: `tech_news_[DATE]_wechat_final.md` (publication-ready)
 
-**Skill 5: tech-news-workflow** (Orchestration)
+**Skill 5: wechat-tech-news** (Orchestration)
 - Coordinates all 5 phases with quality gates between each
 - Tracks execution in `workflow_[DATE].json`
 - Phase-specific retry strategies
 - Optional Word document export
-- One-command automation: `使用 tech-news-workflow skill`
+- One-command automation: `使用 wechat-tech-news skill`
 
 ### Directory Structure
 
@@ -93,7 +93,7 @@ Quality Gates: ✓ After EVERY phase (mandatory)
 │   ├── SKILL.md
 │   └── references/
 │       └── punctuation_guide.md
-├── tech-news-workflow/          # Phase 5: Orchestration
+├── wechat-tech-news/            # Phase 5: Orchestration (Main entry point)
 │   └── SKILL.md
 ├── skills/marketplace-creator/  # Bonus: Marketplace creation utility
 │   ├── SKILL.md
@@ -181,22 +181,22 @@ valid_window = [target_date - 48h, target_date]
 
 ```bash
 # Basic usage (auto date, default settings)
-使用 tech-news-workflow skill
+使用 wechat-tech-news skill
 
 # Custom date (use YYYYMMDD format)
-使用 tech-news-workflow skill --date 20251122
+使用 wechat-tech-news skill --date 20251122
 
 # Adjust item count target
-使用 tech-news-workflow skill --count 60
+使用 wechat-tech-news skill --count 60
 
 # Skip Phase 1 (use existing raw data)
-使用 tech-news-workflow skill --skip-phase1
+使用 wechat-tech-news skill --skip-phase1
 
 # Force specific structure
-使用 tech-news-workflow skill --structure theme_based
+使用 wechat-tech-news skill --structure theme_based
 
 # Strict compliance mode
-使用 tech-news-workflow skill --compliance strict
+使用 wechat-tech-news skill --compliance strict
 ```
 
 ### Testing Individual Phases
@@ -272,7 +272,7 @@ daily_news/
 
 **Change output directory**:
 ```bash
-使用 tech-news-workflow skill --output-dir /path/to/custom/dir
+使用 wechat-tech-news skill --output-dir /path/to/custom/dir
 ```
 
 ## Quality Standards

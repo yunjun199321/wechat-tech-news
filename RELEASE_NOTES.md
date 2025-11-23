@@ -137,7 +137,7 @@ wechat-tech-news/
 │   └── references/
 │       ├── punctuation_guide.md
 │       └── optimization_rounds.md
-├── tech-news-workflow/       # Phase 5: 编排
+├── wechat-tech-news/          # Phase 5: 编排
 │   └── SKILL.md
 ├── README.md                # 主文档
 ├── INSTALL_GUIDE.md         # 安装指南
@@ -193,7 +193,7 @@ unzip wechat-tech-news-1.0.0.zip -d ~/.claude/plugins/marketplaces/
 ### 一键执行完整工作流
 
 ```
-使用 tech-news-workflow skill
+使用 wechat-tech-news skill
 ```
 
 **30 分钟后输出**：
@@ -419,7 +419,7 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 开始使用：
 ```
-使用 tech-news-workflow skill
+使用 wechat-tech-news skill
 ```
 
 享受自动化科技新闻工作流！ 🎉

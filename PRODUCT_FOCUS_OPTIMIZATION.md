@@ -175,7 +175,7 @@ Improvements:
 
 ```bash
 # Test with custom date to compare before/after
-使用 tech-news-workflow skill --date 20251120 --count 50
+使用 wechat-tech-news skill --date 20251120 --count 50
 
 # Review outputs:
 # 1. Check tech_news_20251120_raw.md (collection)
@@ -190,7 +190,7 @@ grep "Content Distribution" validation_report_20251120.md
 
 ```bash
 # Run today's workflow with optimizations
-使用 tech-news-workflow skill
+使用 wechat-tech-news skill
 
 # Compare with previous day's run (if available)
 # Expected changes:
@@ -332,7 +332,7 @@ selected.extend(medium_priority[:16])  # Changed from 13
 
 ## Next Steps
 
-1. **Test the workflow**: Run `使用 tech-news-workflow skill` and review outputs
+1. **Test the workflow**: Run `使用 wechat-tech-news skill` and review outputs
 2. **Analyze distribution**: Check if 60/30/10 ratio is achieved
 3. **Gather feedback**: Does the content feel more product-focused?
 4. **Fine-tune if needed**: Adjust weights or ratios based on results

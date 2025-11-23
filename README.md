@@ -53,7 +53,7 @@ git clone https://github.com/your-org/wechat-tech-news.git
 ### ✅ One-Command Complete Workflow
 
 ```
-使用 tech-news-workflow skill
+使用 wechat-tech-news skill
 ```
 
 **Automatically** (5-Phase Pipeline):
@@ -152,7 +152,7 @@ git clone https://github.com/your-org/wechat-tech-news.git
 
 ---
 
-### 🔄 Skill 5: tech-news-workflow (Phase 5: Orchestration)
+### 🔄 Skill 5: wechat-tech-news (Phase 5: Orchestration)
 
 **End-to-end automation orchestration**
 
@@ -170,7 +170,7 @@ Writing (P3) → Formatting (P4) → Export (P5) → Output
 
 **Usage**:
 ```
-使用 tech-news-workflow skill [options]
+使用 wechat-tech-news skill [options]
 
 Options:
   --date DATE          Override auto date
@@ -192,14 +192,14 @@ Options:
    ```
 3. **Test Installation**:
    ```
-   使用 tech-news-workflow skill --help
+   使用 wechat-tech-news skill --help
    ```
 
 ### Daily Routine
 
 **Morning (9 AM China time)**:
 ```
-使用 tech-news-workflow skill
+使用 wechat-tech-news skill
 ```
 
 **30 minutes later**:
@@ -351,7 +351,7 @@ Publication Readiness   ≥80%      85-90%
 - **[daily-tech-news-validator/SKILL.md](daily-tech-news-validator/SKILL.md)** - Validation engine
 - **[wechat-tech-news-writer/SKILL.md](wechat-tech-news-writer/SKILL.md)** - Content writing
 - **[daily-tech-news-formatter/SKILL.md](daily-tech-news-formatter/SKILL.md)** - Multi-round optimization
-- **[tech-news-workflow/SKILL.md](tech-news-workflow/SKILL.md)** - Workflow orchestration
+- **[wechat-tech-news/SKILL.md](wechat-tech-news/SKILL.md)** - Workflow orchestration
 
 ### Reference Guides
 
